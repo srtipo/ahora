@@ -1,3 +1,10 @@
+# pnpm 11 solo lee .npmrc para auth y registry. El layout de node_modules va aca.
+# "hoisted" deja los paquetes en node_modules/<pkg> en vez del virtual store
+# .pnpm/<pkg>@<ver>_<hash>/, que en Windows hace que las rutas de CMake de
+# react-native-worklets superen los 250 caracteres y el build muera con
+# "ninja: error: manifest 'build.ninja' still dirty after 100 tries".
+nodeLinker: hoisted
+
 allowBuilds:
   sharp: true
   esbuild: true
