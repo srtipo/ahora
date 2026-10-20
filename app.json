@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Ahora",
+    "slug": "ahora",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "ahora",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.srtipo.ahora",
+      "adaptiveIcon": {
+        "backgroundColor": "#FAFAF8",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+        "android.permission.USE_EXACT_ALARM",
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-dev-client",
+      [
+        "expo-notifications",
+        {
+          "color": "#B4653A"
+        }
+      ]
+    ]
+  }
+}
