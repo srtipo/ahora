@@ -1,5 +1,5 @@
 export { BackLink } from "./BackLink";
-export { Button, ICON_SIZE } from "./Button";
+export { Button } from "./Button";
 export { PillButton } from "./PillButton";
 export type { BackLinkProps } from "./BackLink";
 export type { ButtonProps, ButtonSize, ButtonState } from "./Button";

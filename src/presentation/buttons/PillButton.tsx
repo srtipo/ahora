@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import type { ComponentType } from "react";
 import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from "react-native";
+import type { IconProps } from "../icons";
 import { fontFamily, lineHeight } from "../../theme/fonts";
 import { useTheme } from "../../theme/ThemeProvider";
-import { colorIcon } from "./colorIcon";
 
 export type PillButtonProps = {
   /** Pill label. */
@@ -10,10 +10,10 @@ export type PillButtonProps = {
   /**
    * Icon to the left of the label.
    *
-   * The button injects the state `color` into it, so the icon should accept it
-   * (like Bandeja, Tilde and Chevron do). The `size` is up to the screen: 16.
+   * The button renders it with its size (16) and the color of its state, so
+   * the icon follows the text when the button is pressed or disabled.
    */
-  icon?: ReactNode;
+  icon?: ComponentType<IconProps>;
   /** Blocks interaction and paints the disabled state. Default false. */
   disabled?: boolean;
   /** Action on press. */
@@ -31,6 +31,7 @@ const RADIUS = 18;
 const PADDING_H = 14;
 const GAP = 12;
 const FONT_SIZE = 13;
+const ICON_SIZE = 16;
 
 const styles = StyleSheet.create({
   base: {
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
  */
 export function PillButton({
   text,
-  icon,
+  icon: Icon,
   disabled = false,
   onPress,
   accessibilityLabel,
@@ -85,7 +86,7 @@ export function PillButton({
         style,
       ]}
     >
-      {icon ? colorIcon(icon, textColor) : null}
+      {Icon ? <Icon size={ICON_SIZE} color={textColor} /> : null}
       <Text
         style={[
           styles.text,

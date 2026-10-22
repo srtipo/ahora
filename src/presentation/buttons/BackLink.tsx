@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState, type ComponentType } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -6,9 +6,9 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import type { IconProps } from "../icons";
 import { fontFamily, lineHeight } from "../../theme/fonts";
 import { useTheme } from "../../theme/ThemeProvider";
-import { colorIcon } from "./colorIcon";
 
 export type BackLinkProps = {
   /** Link label. */
@@ -16,10 +16,10 @@ export type BackLinkProps = {
   /**
    * Icon to the left of the label.
    *
-   * The button injects the state `color` into it, so the icon should accept it
-   * The `size` is up to the screen: 16.
+   * The button renders it with its size (16) and the color of its state, so
+   * the icon follows the text when the button is pressed or disabled.
    */
-  icon?: ReactNode;
+  icon?: ComponentType<IconProps>;
   /** Blocks interaction and paints the disabled state. Default false. */
   disabled?: boolean;
   /** Action on press. */
@@ -34,6 +34,7 @@ export type BackLinkProps = {
 
 const GAP = 8;
 const FONT_SIZE = 13;
+const ICON_SIZE = 16;
 
 /** The link is 17 high: without a hit slop the finger cannot grab it. */
 const HIT_SLOP = { top: 12, bottom: 12, left: 8, right: 8 };
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
  */
 export function BackLink({
   text,
-  icon,
+  icon: Icon,
   disabled = false,
   onPress,
   accessibilityLabel,
@@ -87,7 +88,7 @@ export function BackLink({
       testID={testID}
       style={[styles.base, style]}
     >
-      {icon ? colorIcon(icon, textColor) : null}
+      {Icon ? <Icon size={ICON_SIZE} color={textColor} /> : null}
       <Text
         style={[
           styles.text,

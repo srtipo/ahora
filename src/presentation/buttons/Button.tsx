@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import type { ComponentType } from "react";
 import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from "react-native";
+import type { IconProps } from "../icons";
 import { fontFamily, lineHeight } from "../../theme/fonts";
 import { useTheme } from "../../theme/ThemeProvider";
-import { colorIcon } from "./colorIcon";
 import { Spinner } from "./Spinner";
 
 /** Button scale. */
@@ -27,11 +27,11 @@ export type ButtonProps = {
   /**
    * Icon to the left of the label.
    *
-   * The button injects the state `color` into it, so the icon should accept it
-   * (like Bandeja, Tilde and Chevron do). The `size` is up to the screen: 20 on
-   * large, 16 on medium, 14 on small.
+   * The button renders it with the size of its scale (20 on large, 16 on
+   * medium, 14 on small) and the color of its state, so the icon follows the
+   * text when the button is pressed or disabled.
    */
-  icon?: ReactNode;
+  icon?: ComponentType<IconProps>;
   /** Blocks interaction and paints the disabled state. Default false. */
   disabled?: boolean;
   /** Action on press. */
@@ -52,21 +52,10 @@ type Metrics = {
   iconSize: number;
 };
 
-/**
- * Icon size that goes with each scale.
- *
- * Exported so the screen can draw the icon at the size the button expects.
- */
-export const ICON_SIZE: Record<ButtonSize, number> = {
-  large: 20,
-  medium: 16,
-  small: 14,
-};
-
 const METRICS: Record<ButtonSize, Metrics> = {
-  large: { fontSize: 18, height: 56, radius: 28, paddingH: 24, iconSize: ICON_SIZE.large },
-  medium: { fontSize: 15, height: 48, radius: 24, paddingH: 20, iconSize: ICON_SIZE.medium },
-  small: { fontSize: 13, height: 44, radius: 22, paddingH: 16, iconSize: ICON_SIZE.small },
+  large: { fontSize: 18, height: 56, radius: 28, paddingH: 24, iconSize: 20 },
+  medium: { fontSize: 15, height: 48, radius: 24, paddingH: 20, iconSize: 16 },
+  small: { fontSize: 13, height: 44, radius: 22, paddingH: 16, iconSize: 14 },
 };
 
 const GAP = 8;
@@ -95,7 +84,7 @@ export function Button({
   text,
   size = "large",
   state = "default",
-  icon,
+  icon: Icon,
   disabled = false,
   onPress,
   accessibilityLabel,
@@ -132,7 +121,7 @@ export function Button({
       {loading ? (
         <Spinner size={metrics.iconSize} color={textColor} />
       ) : (
-        icon && colorIcon(icon, textColor)
+        Icon && <Icon size={metrics.iconSize} color={textColor} />
       )}
       <Text
         style={[
