@@ -17,7 +17,7 @@ const TRAY_STEM = "M12 7L12 14";
 const TRAY_ARROW = "M9 11L12 14L15 11";
 
 /** Check mark. */
-const TILDE = "M4.5 12.5L9.5 17.5L19.5 6.5";
+const CHECK = "M4.5 12.5L9.5 17.5L19.5 6.5";
 
 /** Left chevron. */
 const CHEVRON = "M14.5 5.5L8 12L14.5 18.5";
@@ -29,11 +29,11 @@ const CHEVRON = "M14.5 5.5L8 12L14.5 18.5";
  * inside the viewBox is scaled with the icon.
  */
 const TRAY_STROKE = 1.5;
-const TILDE_STROKE = 1.8;
+const CHECK_STROKE = 1.8;
 const CHEVRON_STROKE = 1.8;
 
 /** The tray, with the arrow going in: "take it out of today". */
-export function Bandeja({ size = 24, color = "#8E8E88" }: IconProps) {
+export function Tray({ size = 24, color = "#8E8E88" }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -62,13 +62,13 @@ export function Bandeja({ size = 24, color = "#8E8E88" }: IconProps) {
 }
 
 /** The check mark: the task is done. */
-export function Tilde({ size = 24, color = "#8E8E88" }: IconProps) {
+export function Check({ size = 24, color = "#8E8E88" }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
-        d={TILDE}
+        d={CHECK}
         stroke={color}
-        strokeWidth={(TILDE_STROKE * 24) / size}
+        strokeWidth={(CHECK_STROKE * 24) / size}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

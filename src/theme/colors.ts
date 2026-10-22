@@ -3,6 +3,8 @@ export type Palette = {
   bg: string;
   /** Cards and text fields */
   surface: string;
+  /** Inbox rows: a soft gray card, between the background and the card */
+  surfaceMuted: string;
   /** Card and field borders */
   border: string;
   /** Screen titles and task text */
@@ -26,6 +28,7 @@ export type Palette = {
 export const light: Palette = {
   bg: "#FAFAF8",
   surface: "#FFFFFF",
+  surfaceMuted: "#F2F2EF",
   border: "#E7E7E2",
   text: "#1A1A1A",
   textSoft: "#8E8E88",
@@ -40,6 +43,7 @@ export const light: Palette = {
 export const dark: Palette = {
   bg: "#141413",
   surface: "#1E1E1C",
+  surfaceMuted: "#232320",
   border: "#33322E",
   text: "#F2F1EC",
   textSoft: "#8E8E88",
