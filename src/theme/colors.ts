@@ -1,20 +1,26 @@
 export type Palette = {
-  /** Fondo de la pantalla */
+  /** Screen background */
   bg: string;
-  /** Tarjeta y campo de anotar */
+  /** Cards and text fields */
   surface: string;
-  /** Borde de tarjeta y de campo */
+  /** Card and field borders */
   border: string;
-  /** Título y texto de la tarea */
+  /** Screen titles and task text */
   text: string;
-  /** Tilde, puntito de la marca y tarea completada */
+  /** Check mark, priority dot and completed tasks */
   textSoft: string;
-  /** Terracota: botón, marca y borde marcado */
+  /** Terracotta: button, priority mark and marked border */
   accent: string;
-  /** Fondo de la tarjeta marcada */
+  /** Pressed terracotta: the primary button while pressed */
+  accentPressed: string;
+  /** Background of the marked card */
   accentSoft: string;
-  /** Texto encima del terracota */
+  /** Text on top of terracotta */
   onAccent: string;
+  /** Muted background: disabled button and pressed pill */
+  mutedBg: string;
+  /** Disabled text and icon */
+  mutedText: string;
 };
 
 export const light: Palette = {
@@ -24,8 +30,11 @@ export const light: Palette = {
   text: "#1A1A1A",
   textSoft: "#8E8E88",
   accent: "#B4653A",
+  accentPressed: "#A25A33",
   accentSoft: "#F6EAE3",
   onAccent: "#FFFFFF",
+  mutedBg: "#EFEFEB",
+  mutedText: "#B5B5AD",
 };
 
 export const dark: Palette = {
@@ -35,6 +44,9 @@ export const dark: Palette = {
   text: "#F2F1EC",
   textSoft: "#8E8E88",
   accent: "#D3854F",
+  accentPressed: "#BC7646",
   accentSoft: "#33211A",
   onAccent: "#1A1A1A",
+  mutedBg: "#2A2A28",
+  mutedText: "#5A5A54",
 };

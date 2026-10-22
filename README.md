@@ -26,6 +26,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Notificaciones:** expo-notifications (el aviso local del final del bloque)
 - **Haptics:** expo-haptics (los tics de "Empezar" y "hecho")
 - **Iconos:** react-native-svg (trazados a mano desde el SVG de Penpot, no una librería de íconos)
+- **Tipografía:** Inter Tight (OFL), empaquetada en `assets/fonts/` y cargada con expo-font
 - **Safe area:** react-native-safe-area-context
 - **Gestor de paquetes:** pnpm
 - **Expo Go:** el Expo Go de la Play Store hoy corre SDK 57, así que para este proyecto hay dos caminos: el APK oficial de Expo Go 58 (rápido para iterar) o una dev build. La dev build hace falta igual, porque USE_EXACT_ALARM no se puede declarar desde Expo Go y sin eso la vibración del final del bloque llega cuando quiere.
