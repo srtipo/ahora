@@ -10,7 +10,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Lista cortísima**: máximo 3 tareas abiertas en pantalla. Sin categorías, sin prioridades, sin fechas límite, sin backlog que crezca.
 - **Buzón**: captura libre, sin límite. Es de donde salen las tareas de hoy.
 - **Siempre hay 3 filas**: al completar una, sube sola la más vieja del buzón.
-- **Una sola marca** en toda la app: el puntito. Marcás una y la anterior pierde la marca. La marcada sube primero, aunque sea más nueva.
+- **Una sola marca** en toda la app: la teñida de terracota. Marcás una y la anterior pierde la marca. La marcada sube primero, aunque sea más nueva.
 - **El bloque**: al llegar dice "Empezar"; al terminar el mismo botón dice "hecho". "Hecho" sólo existe en el bloque, así que marcar implica haber hecho los cinco minutos.
 - **"Sacar de hoy"**: saca esa tarjeta de las tres y la devuelve al buzón.
 - **Sin barra de progreso**: sólo el número. Cuando hacés algo no mirás el teléfono, así que una barra se lee de reojo o no se lee nunca.
@@ -25,6 +25,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Persistencia:** @react-native-asyncmstorage/async-storage (el buzón y el bloque corriendo sobreviven a que la app se cierre)
 - **Notificaciones:** expo-notifications (el aviso local del final del bloque)
 - **Haptics:** expo-haptics (los tics de "Empezar" y "hecho")
+- **Gestos:** react-native-gesture-handler + react-native-reanimated (el swipe de "Sacar de hoy")
 - **Iconos:** react-native-svg (trazados a mano desde el SVG de Penpot, no una librería de íconos)
 - **Tipografía:** Inter Tight (OFL), empaquetada en `assets/fonts/` y cargada con expo-font
 - **Safe area:** react-native-safe-area-context
@@ -39,15 +40,28 @@ Un solo color de acento. Fondo, tarjetas y bordes neutros; terracota para lo act
 | ---------------- | --------- | --------------------------------------- |
 | Fondo            | #FAFAF8 | Fondo de la app                         |
 | Tarjeta          | #FFFFFF | Fondo de las tarjetas y del campo       |
+| Fila del buzón   | #F2F2EF | Fondo de las filas del buzón            |
 | Borde            | #E7E7E2 | Borde de tarjeta, borde de campo        |
 | Texto            | #1A1A1A | Texto principal, fondo del toast        |
 | Texto suave      | #8E8E88 | Texto secundario, íconos, tilde         |
-| Acento terracota | #B4653A | Marca, botón, toast de error            |
+| Texto hecho      | #B5B5AD | Texto de la tarea completada            |
+| Acento terracota | #B4653A | Borde y fondo de la marcada, botón     |
 | Acento suave     | #F6EAE3 | Fondos terracota                        |
+
+**Tarjetas.** Dos familias, con escalas distintas:
+
+| Componente            | Alto | Radio | Texto  | Padding | Estados                        |
+| --------------------- | ---- | ----- | ------ | ------- | ------------------------------ |
+| `TaskCard` (Ahora)    | 64   | 12    | 16 px  | 40      | normal · marcada · completada  |
+| `InboxItem` (Buzón)   | 48   | 10    | 14 px  | 16      | normal · marcado               |
+
+Ninguna tiene ancho propio: las dos se estiran al ancho de la lista, así que el mismo componente sirve en cualquier pantalla. El alto es un mínimo, para que una tarea con texto largo crezca en vez de cortarse. La marcada se tiñe de terracota suave con borde terracota; la completada conserva la tarjeta con el texto en gris y lleva la tilde a la derecha. Ninguna lleva puntito: el color basta para decir cuál es la marcada, y el texto queda siempre en el mismo lugar.
+
+**Sacar de hoy.** Arrastrar la tarjeta a la derecha la saca de la lista: en el hueco que deja aparece la bandeja. El gesto vive en la tarjeta, pero no decide qué pasa: avisa con `onSwipeOut` y la pantalla hace el resto. Umbral: 100 px.
 
 **Tres pantallas.** *Ahora* (las tres tareas, campo para anotar, pastilla "Buzón" arriba a la derecha), *Bloque* (reloj de 5:00 y botón), *Buzón* (todo lo pendiente, ordenado solo, campo para anotar). Sin barra inferior. Los links de vuelta dicen "‹ Ahora".
 
-**Íconos.** Sólo dos en toda la app, mismo grosor (1,5): *Sacar de hoy* (bandeja con flecha hacia adentro, #8E8E88) y *Hecho* (tilde). La prioridad es un puntito. No hay ícono de arranque.
+**Íconos.** Tres, en `src/presentation/icons/`: *Sacar de hoy* (`Tray`, bandeja con flecha hacia adentro, #8E8E88), *Hecho* (`Check`, tilde) y el chevron del *‹ Ahora* (`Chevron`). Los tres son de trazo y tienen el mismo grosor (1,5). No hay ícono de arranque. La bandeja no se dibuja adentro de la tarjeta: se inyecta como dependencia (`tray={Tray}`), igual que el botón recibe su ícono. La tilde de la tarea completada, en cambio, es parte de la propia tarjeta.
 
 **Avisos.** Una sola superficie: un toast que baja del borde superior, píldora de 40 px de alto y radio 20, tinta #1A1A1A con texto blanco para confirmaciones y terracota para errores. Los mensajes son "Anotada", "No se pudo guardar. Probá de nuevo." y "No te puedo avisar cuando termine."
 
@@ -63,11 +77,13 @@ Planeada. En Expo Router las rutas viven en src/app/, y todo lo demás fuera de 
         index.tsx          -- Ahora
         bloque.tsx         -- Bloque
         buzon.tsx          -- Buzón
-      components/          -- Tarjeta, CampoAnotar, Aviso, BarraSuperior
-      icons/               -- Bandeja, Tilde, Chevron (react-native-svg)
+      presentation/
+        buttons/           -- Button, PillButton, BackLink, Spinner
+        cards/             -- TaskCard, InboxItem
+        icons/             -- Tray, Check, Chevron
       notifications/       -- canal de Android, aviso local, tarea en segundo plano
       state/               -- buzón, lista de 3, bloque corriendo, persistencia
-      theme/               -- paleta, tipografía, espaciado
+      theme/               -- paleta, tipografía
 
 ## Requisitos
 
