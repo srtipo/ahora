@@ -27,9 +27,10 @@ import { useTheme } from "../../theme/ThemeProvider";
 /**
  * Task card state.
  *
- * "marked" is the priority one: it is the only task that is tinted and the
- * only one that shows the dot. "done" is the task that was completed during
- * the day: it stays in the list until the day changes.
+ * "marked" is the priority one: it is the only task that is tinted, with a
+ * terracotta border. The colour is enough to say which one it is, so the
+ * card carries no dot. "done" is the task that was completed during the day:
+ * it stays in the list until the day changes.
  */
 export type TaskCardState = "normal" | "marked" | "done";
 

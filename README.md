@@ -10,7 +10,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Lista cortísima**: máximo 3 tareas abiertas en pantalla. Sin categorías, sin prioridades, sin fechas límite, sin backlog que crezca.
 - **Buzón**: captura libre, sin límite. Es de donde salen las tareas de hoy.
 - **Siempre hay 3 filas**: al completar una, sube sola la más vieja del buzón.
-- **Una sola marca** en toda la app: el puntito. Marcás una y la anterior pierde la marca. La marcada sube primero, aunque sea más nueva.
+- **Una sola marca** en toda la app: la teñida de terracota. Marcás una y la anterior pierde la marca. La marcada sube primero, aunque sea más nueva.
 - **El bloque**: al llegar dice "Empezar"; al terminar el mismo botón dice "hecho". "Hecho" sólo existe en el bloque, así que marcar implica haber hecho los cinco minutos.
 - **"Sacar de hoy"**: saca esa tarjeta de las tres y la devuelve al buzón.
 - **Sin barra de progreso**: sólo el número. Cuando hacés algo no mirás el teléfono, así que una barra se lee de reojo o no se lee nunca.
@@ -45,7 +45,7 @@ Un solo color de acento. Fondo, tarjetas y bordes neutros; terracota para lo act
 | Texto            | #1A1A1A | Texto principal, fondo del toast        |
 | Texto suave      | #8E8E88 | Texto secundario, íconos, tilde         |
 | Texto hecho      | #B5B5AD | Texto de la tarea completada            |
-| Acento terracota | #B4653A | Marca, botón, toast de error            |
+| Acento terracota | #B4653A | Borde y fondo de la marcada, botón     |
 | Acento suave     | #F6EAE3 | Fondos terracota                        |
 
 **Tarjetas.** Dos familias, con escalas distintas:

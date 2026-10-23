@@ -11,9 +11,9 @@ import { useTheme } from "../../theme/ThemeProvider";
 /**
  * Inbox row state.
  *
- * "marked" is the priority one: it is the only row that is tinted and the
- * only one that shows the dot. There is no "done" here: a task that is
- * completed leaves the inbox.
+ * "marked" is the priority one: it is the only row that is tinted, with a
+ * terracotta border. It carries no dot: the colour says which one it is.
+ * There is no "done" here: a task that is completed leaves the inbox.
  */
 export type InboxItemState = "normal" | "marked";
 

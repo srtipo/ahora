@@ -9,9 +9,9 @@ export type Palette = {
   border: string;
   /** Screen titles and task text */
   text: string;
-  /** Check mark, priority dot and completed tasks */
+  /** Check mark, tray icon and back link */
   textSoft: string;
-  /** Terracotta: button, priority mark and marked border */
+  /** Terracotta: button and marked border */
   accent: string;
   /** Pressed terracotta: the primary button while pressed */
   accentPressed: string;
@@ -21,7 +21,7 @@ export type Palette = {
   onAccent: string;
   /** Muted background: disabled button and pressed pill */
   mutedBg: string;
-  /** Disabled text and icon */
+  /** Disabled text and completed task text */
   mutedText: string;
 };
 
