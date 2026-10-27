@@ -79,6 +79,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
       app/                  -- sólo ruteo: los archivos de Expo Router
         _layout.tsx           -- raíz: SafeAreaProvider + ThemeProvider + QueryClientProvider + ToastProvider
         index.tsx             -- Ahora → re-export de modules/now/presentation/screens/now.screen
+        buzon.tsx            -- Buzón → re-export de modules/stack/presentation/screens/stack.screen
         bloque.tsx            -- Bloque (todavía no)
       modules/              -- un módulo por funcionalidad
         now/                  -- la pantalla de Ahora
@@ -88,10 +89,16 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           presentation/
             components/now-task-list.tsx
             screens/now.screen.tsx
+        stack/                -- la pantalla del Buzón
+          hooks/                 -- un hook por accion del core
+            useGetStackTasks.ts
+          presentation/
+            components/stack-task-list.tsx
+            screens/stack.screen.tsx
         clock/                -- la pantalla del Bloque (todavía no)
       core/                 -- el API del dominio: las reglas y la base
         index.ts              -- el barril: lo que la app puede importar
-        types.ts              -- la tarea de now
+        types.ts              -- las tareas de now y del buzón
         dates.ts              -- los helpers de fecha
         ids.ts                -- los ids de las tareas (UUID v4)
         db/                   -- SQLite: la base, la forma y las migraciones
@@ -106,6 +113,11 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           getNowTasks.handler.ts
           getNowTasksDoneToday.handler.ts
           repository.ts         -- el SQL de las tareas de ahora
+        stack/                 -- el buzón: las tareas que todavía no entraron
+          index.ts
+          getStackTasks.handler.ts
+          repository.ts         -- el SQL de las tareas del buzón
+          seed.ts               -- la muestra de desarrollo
       presentation/         -- la UI base, por tipo de componente
         buttons/              -- Button, PillButton, BackLink, Spinner
         cards/                -- TaskCard, InboxItem
@@ -167,6 +179,10 @@ Las reglas:
   completadas hoy arriba y las demás después, sin nada que las separe.
 - **La marcada va primero.** En la lista de ahora, la marcada va arriba
   aunque sea la más nueva, y las demás van de la más vieja a la más nueva.
+- **El buzón se ordena solo.** Sus tareas (la tabla `stack_task`) se leen con
+  el mismo orden: la marcada primero, aunque sea la más nueva, y las demás de
+  la más vieja a la más nueva. Por ahora el buzón sólo se lee: no hay
+  todavía pantalla que lo dibuje ni regla que lo escriba.
 - **Lo que está `done` sale de la lista.** Deja de ser una tarea de ahora, pero
   queda guardada, con el momento en que se completó.
 - **Siempre hay tres abiertas.** Cuando entra una cuarta, deja la tabla la
@@ -196,4 +212,5 @@ En construcción. Hoy están la pantalla de *Ahora* (las tareas de now, las
 completadas de hoy arriba y el campo para anotar), el sistema de diseño y el
 estado con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`.
 El campo de Ahora ya anota: la regla de las tres y la escritura están en el
-core. Falta el bloque de cinco minutos, el buzón y el aviso del final.
+core. El del buzón todavía no: el campo está, pero lo que se escribe en él no
+se guarda todavía. Falta el bloque de cinco minutos y el aviso del final.

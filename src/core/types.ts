@@ -21,3 +21,14 @@ export type NowTask = {
   /** Epoch in milliseconds. Only the done tasks have it. */
   completedAt?: number;
 };
+
+export type StackTask = {
+  /** Unique id of the task. */
+  id: string;
+  /** What the user wrote. */
+  name: string;
+  /** It is drawn highlighted. */
+  marked: boolean;
+  /** Epoch in milliseconds. It orders the tasks by age. */
+  createdAt: number;
+};

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAddNowTask, useGetNowTasks, useGetNowTasksDoneToday } from "@/modules/now/hooks";
 import { NowTaskList } from "@/modules/now/presentation/components";
+import { PillButton } from "@/presentation/buttons";
 import { TextField } from "@/presentation/fields";
+import { Tray } from "@/presentation/icons";
 import { useToast } from "@/presentation/toasts";
 import { fontFamily, lineHeight, useTheme } from "@/theme";
 
@@ -24,6 +27,9 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: SIDE,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   title: {
     fontFamily,
@@ -48,6 +54,7 @@ const styles = StyleSheet.create({
 export default function NowScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const toast = useToast();
   const { data: tasks = [], isLoading: loadingTasks } = useGetNowTasks();
   const { data: done = [], isLoading: loadingDone } = useGetNowTasksDoneToday();
@@ -93,6 +100,12 @@ export default function NowScreen() {
         >
           Ahora
         </Text>
+
+        <PillButton
+          text="Buzón"
+          icon={Tray}
+          onPress={() => router.push("/buzon")}
+        />
       </View>
 
       <ScrollView
