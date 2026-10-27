@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { NowTask } from "@/core";
 import { useGetNowTasks, useGetNowTasksDoneToday } from "@/modules/now/hooks";
-import { TaskCard, type TaskCardState } from "@/presentation/cards";
+import { NowTaskList } from "@/modules/now/presentation/components";
 import { TextField } from "@/presentation/fields";
 import { fontFamily, lineHeight, useTheme } from "@/theme";
 
@@ -13,10 +12,7 @@ const SIDE = 24;
 /** The gap between the top of the screen and the header. */
 const TOP = 4;
 
-/** The gap between the rows of the list. */
-const ROW_GAP = 12;
-
-/** The gap between the blocks: the header and the list, the list and the field. */
+/** The gap between the blocks: the title, the list and the field. */
 const BLOCK_GAP = 28;
 
 const TITLE_SIZE = 26;
@@ -35,28 +31,10 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: SIDE,
   },
-  list: {
-    marginTop: BLOCK_GAP,
-    gap: ROW_GAP,
-  },
   field: {
     marginTop: BLOCK_GAP,
   },
 });
-
-/**
- * The state of the card of a task.
- *
- * A task that is done is drawn as done, with the tick, and a task that is
- * marked is drawn highlighted. A task that is both is drawn as done: the
- * completion is the stronger signal.
- */
-function cardState(task: NowTask): TaskCardState {
-  if (task.status === "done") return "done";
-  if (task.marked) return "marked";
-
-  return "normal";
-}
 
 /**
  * Ahora: the tasks of now and the field to write in.
@@ -76,7 +54,6 @@ export default function NowScreen() {
   // The completed ones go first and the others after them, in one list:
   // there is no line and nothing that separates them.
   const list = [...done, ...tasks];
-  const hasList = list.length > 0;
 
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
@@ -103,17 +80,7 @@ export default function NowScreen() {
         ]}
         keyboardShouldPersistTaps="handled"
       >
-        {hasList ? (
-          <View style={styles.list}>
-            {list.map((task) => (
-              <TaskCard
-                key={task.id}
-                text={task.name}
-                state={cardState(task)}
-              />
-            ))}
-          </View>
-        ) : null}
+        <NowTaskList tasks={list} />
 
         <TextField
           variant="marked"
