@@ -1,4 +1,5 @@
 import type { Executor } from "@/core/db";
+import { newId } from "@/core/ids";
 import type { NowTask, NowTaskStatus } from "@/core/types";
 
 /**
@@ -33,10 +34,30 @@ function toNowTask(row: NowTaskRow): NowTask {
 }
 
 /**
- * The tasks with one of the given statuses, the oldest first.
+ * A task that is added to the table.
+ *
+ * The name, the mark and the moment come from the caller: the repository
+ * does not decide them, it only writes them. The id is not asked for
+ * either: the repository gives one to the task. The status is not asked for
+ * either: a task that is added is a task to do.
+ */
+export type NewNowTask = {
+  /** What the user wrote. */
+  name: string;
+  /** It is drawn highlighted. */
+  marked: boolean;
+  /** Epoch in milliseconds. It orders the tasks by age. */
+  createdAt: number;
+};
+
+/**
+ * The tasks with one of the given statuses, the marked one first.
  *
  * The statuses are the ones the caller asks for: the table knows all of
- * them and the repository does not decide which ones are wanted.
+ * them and the repository does not decide which ones are wanted. The order
+ * is the one of the priority: the marked one goes first, even if it is the
+ * newest, and the rest go by age, the oldest first. The last of the list
+ * is the one that matters the least.
  */
 export async function listNowTasks(
   db: Executor,
@@ -50,7 +71,7 @@ export async function listNowTasks(
     `SELECT id, name, status, marked, created_at, completed_at
      FROM now_tasks
      WHERE status IN (${placeholders})
-     ORDER BY created_at ASC`,
+     ORDER BY marked DESC, created_at ASC`,
     statuses,
   );
 
@@ -78,4 +99,36 @@ export async function listNowTasksDoneToday(
   );
 
   return rows.map(toNowTask);
+}
+
+/**
+ * Adds a task to the table of the tasks of now.
+ *
+ * The task is written as a task to do and without a moment of completion:
+ * the ones that are in progress and the ones that are done come later, with
+ * the actions that move them. The id is given here, not asked for: two
+ * tasks written in the same millisecond do not share it.
+ */
+export async function insertNowTask(
+  db: Executor,
+  task: NewNowTask,
+): Promise<void> {
+  await db.runAsync(
+    `INSERT INTO now_tasks (id, name, status, marked, created_at, completed_at)
+     VALUES (?, ?, 'todo', ?, ?, NULL)`,
+    [newId(), task.name, task.marked ? 1 : 0, task.createdAt],
+  );
+}
+
+/**
+ * Removes a task from the table of the tasks of now.
+ *
+ * It is the way out of now: the task that leaves the three does not stay
+ * in the table.
+ */
+export async function deleteNowTask(
+  db: Executor,
+  id: string,
+): Promise<void> {
+  await db.runAsync("DELETE FROM now_tasks WHERE id = ?", [id]);
 }
