@@ -20,9 +20,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-import { Check, type IconProps } from "../icons";
-import { fontFamily, lineHeight } from "../../theme/fonts";
-import { useTheme } from "../../theme/ThemeProvider";
+import { Check, type IconProps } from "@/presentation/icons";
+import { fontFamily, lineHeight, useTheme } from "@/theme";
 
 /**
  * Task card state.

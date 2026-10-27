@@ -1,8 +1,7 @@
 import type { ComponentType } from "react";
 import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from "react-native";
-import type { IconProps } from "../icons";
-import { fontFamily, lineHeight } from "../../theme/fonts";
-import { useTheme } from "../../theme/ThemeProvider";
+import type { IconProps } from "@/presentation/icons";
+import { fontFamily, lineHeight, useTheme } from "@/theme";
 
 export type PillButtonProps = {
   /** Pill label. */

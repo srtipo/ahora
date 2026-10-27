@@ -5,8 +5,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { fontFamily, lineHeight } from "../../theme/fonts";
-import { useTheme } from "../../theme/ThemeProvider";
+import { fontFamily, lineHeight, useTheme } from "@/theme";
 
 /**
  * Inbox row state.

@@ -43,7 +43,8 @@
         {
           "color": "#B4653A"
         }
-      ]
+      ],
+      "expo-sqlite"
     ]
   }
 }
