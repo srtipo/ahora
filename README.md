@@ -18,11 +18,14 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 
 ## Tech Stack
 
-- **Framework:** React Native 0.88 + Expo SDK 58
-- **React:** 19.3.0 (la que fija el SDK 58)
+- **Framework:** React Native 0.86 + Expo SDK 57
+- **React:** 19.2.3 (la que fija el SDK 57)
 - **Lenguaje:** TypeScript
-- **Routing:** Expo Router (file-based, stack)
-- **Persistencia:** @react-native-asyncmstorage/async-storage (el buzón y el bloque corriendo sobreviven a que la app se cierre)
+- **Routing:** Expo Router (file-based, stack). Las rutas viven en `src/app/`
+- **Alias:** `@/` → `src/`, por `paths` del `tsconfig.json` (los resuelve Expo
+  solo, sin plugin de Babel)
+- **Estado:** React Query (@tanstack/react-query): el loading y el cache, un hook por acción
+- **Persistencia:** expo-sqlite (SQLite: el buzón, las tres y el bloque corriendo sobreviven a que la app se cierre)
 - **Notificaciones:** expo-notifications (el aviso local del final del bloque)
 - **Haptics:** expo-haptics (los tics de "Empezar" y "hecho")
 - **Gestos:** react-native-gesture-handler + react-native-reanimated (el swipe de "Sacar de hoy")
@@ -30,7 +33,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Tipografía:** Inter Tight (OFL), empaquetada en `assets/fonts/` y cargada con expo-font
 - **Safe area:** react-native-safe-area-context
 - **Gestor de paquetes:** pnpm
-- **Expo Go:** el Expo Go de la Play Store hoy corre SDK 57, así que para este proyecto hay dos caminos: el APK oficial de Expo Go 58 (rápido para iterar) o una dev build. La dev build hace falta igual, porque USE_EXACT_ALARM no se puede declarar desde Expo Go y sin eso la vibración del final del bloque llega cuando quiere.
+- **Expo Go:** el Expo Go de la Play Store hoy corre SDK 57, así que para este proyecto hay dos caminos: el APK oficial de Expo Go 57 (rápido para iterar) o una dev build. La dev build hace falta igual, porque USE_EXACT_ALARM no se puede declarar desde Expo Go y sin eso la vibración del final del bloque llega cuando quiere.
 
 ## Sistema de diseño
 
@@ -67,23 +70,103 @@ Ninguna tiene ancho propio: las dos se estiran al ancho de la lista, así que el
 
 **Icono de la app.** Cronómetro: aro terracota con la coronita despegada arriba y el punto al centro, sobre fondo crema #FAFAF8.
 
-## Pantallas
+## La organización de los archivos
 
-Planeada. En Expo Router las rutas viven en src/app/, y todo lo demás fuera de ahí:
+Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` está el motivo de cada una.
 
     src/
-      app/
-        _layout.tsx        -- raíz: SafeAreaProvider + ToastProvider
-        index.tsx          -- Ahora
-        bloque.tsx         -- Bloque
-        buzon.tsx          -- Buzón
-      presentation/
-        buttons/           -- Button, PillButton, BackLink, Spinner
-        cards/             -- TaskCard, InboxItem
-        icons/             -- Tray, Check, Chevron
-      notifications/       -- canal de Android, aviso local, tarea en segundo plano
-      state/               -- buzón, lista de 3, bloque corriendo, persistencia
-      theme/               -- paleta, tipografía
+      app/                  -- sólo ruteo: los archivos de Expo Router
+        _layout.tsx           -- raíz: SafeAreaProvider + ThemeProvider + QueryClientProvider + ToastProvider
+        index.tsx             -- Ahora → re-export de modules/now/presentation/screens/now.screen
+        bloque.tsx            -- Bloque (todavía no)
+      modules/              -- un módulo por funcionalidad
+        now/                  -- la pantalla de Ahora
+          hooks/                 -- un hook por accion del core
+            useGetNowTasks.ts
+            useGetNowTasksDoneToday.ts
+          presentation/
+            screens/now.screen.tsx
+        clock/                -- la pantalla del Bloque (todavía no)
+      core/                 -- el API del dominio: las reglas y la base
+        index.ts              -- el barril: lo que la app puede importar
+        types.ts              -- la tarea de now
+        dates.ts              -- los helpers de fecha
+        db/                   -- SQLite: la base, la forma y las migraciones
+          index.ts              -- el barril
+          database.ts           -- la conexión y las migraciones
+          executor.ts           -- lo que corre una consulta: la base o una transacción
+          migrations.ts         -- las migraciones, en orden
+          schema.ts             -- la forma de la base
+        now/                  -- las reglas de las tareas de ahora
+          index.ts
+          getNowTasks.handler.ts
+          getNowTasksDoneToday.handler.ts
+          repository.ts         -- el SQL de las tareas de ahora
+      presentation/         -- la UI base, por tipo de componente
+        buttons/              -- Button, PillButton, BackLink, Spinner
+        cards/                -- TaskCard, InboxItem
+        fields/               -- TextField
+        icons/                -- Icons: Tray, Check, Chevron
+        toasts/               -- Toast, ToastProvider
+        timers/               -- Countdown
+      theme/                -- los tokens
+        colors.ts, fonts.ts, ThemeProvider.tsx
+
+Tres reglas:
+
+- **Dentro de una carpeta, ruta relativa. Entre carpetas, el alias `@/`.** Lo de
+  afuera de `src/` no usa rutas relativas: `"@/presentation/cards"`.
+- **Cada carpeta que se importa desde afuera tiene su `index.ts`.** El barril
+  es la puerta, y adentro se importa del archivo.
+- **`core/` no importa de `modules/` ni de `presentation/`.** Las reglas no
+  saben de React; el orden va de afuera hacia adentro: app → modules →
+  presentation/theme, y app → core → nada.
+
+La capa de presentación se ordena por **tipo de componente** y no por
+pantalla, porque un componente que se usa en dos pantallas no puede vivir en
+una de las dos. La de módulos se ordena por **funcionalidad**, y adentro la
+pantalla vive en `presentation/screens/`.
+
+## El estado
+
+Una base, dos tablas y un módulo: el estado vive en SQLite y las reglas en
+`src/core/`, así que las pantallas sólo dibujan lo que el módulo devuelve.
+
+El estado llega a las pantallas con React Query: cada acción del core tiene
+un hook en la carpeta `hooks/` de su módulo (`modules/now/hooks/`), y ese hook llama a la
+función del core que busca los datos. React Query maneja el loading y la
+cache, así que ninguna pantalla dibuja un estado vacío mientras carga.
+
+La base tiene dos tablas. `now_tasks` es la lista de tareas de ahora y
+`stack_task` es la pila de las que todavía no entraron. La tarea de now es
+`{id, name, status, marked, createdAt}` y las completadas le suman
+`completedAt`. El `status` dice si está para hacer ("todo"), en curso
+("inProgress") o completada ("done"), y `marked` dice si la tarea se ve
+resaltada.
+
+La base es la que valida: la tabla no acepta un texto vacío, ni un estado que
+no sea uno de los tres, ni una marca que no sea 0 o 1, ni dos tareas con el
+mismo id. Un valor roto no puede llegar a la app, porque la base no lo deja
+existir.
+
+### La forma de la base
+
+`src/core/db/schema.ts` tiene el DDL y `src/core/db/migrations.ts` las
+migraciones, en orden. La versión vive en la base (`PRAGMA user_version`), así
+que viaja con los datos: una migración y el número que dice que corrió son una
+sola transacción, y si la app muere en el medio la base se queda en la versión
+que tenía y la migración corre otra vez desde el principio.
+
+Las reglas:
+
+- **La completada de hoy va primero.** La lista de ahora muestra las tareas
+  completadas hoy arriba y las demás después, sin nada que las separe.
+- **Lo que está `done` sale de la lista.** Deja de ser una tarea de ahora, pero
+  queda guardada, con el momento en que se completó.
+- **La marca es un booleano.** No es un estado: la tarea sigue siendo la que
+  es y además se ve resaltada.
+- **La base es la que valida.** Cada consulta va por un índice o por la
+  tabla entera, y la tabla entera es corta.
 
 ## Requisitos
 
@@ -96,6 +179,10 @@ Planeada. En Expo Router las rutas viven en src/app/, y todo lo demás fuera de 
 - `decisiones.md` — la fuente de verdad del producto: cada decisión del diseño está anotada con el número y el motivo. Está en `.gitignore` y **no se versiona**: es un documento de trabajo, no parte del repo.
 - El diseño vive en Penpot.
 
-## Estado
+## Estado de la app
 
-En construcción. Hoy el repo tiene el README; la app todavía no está.
+En construcción. Hoy están la pantalla de *Ahora* (las tareas de now, las
+completadas de hoy arriba y el campo para anotar), el sistema de diseño y el
+estado con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`.
+Falta el bloque de cinco minutos, el buzón, la escritura de tareas y el aviso
+del final.
