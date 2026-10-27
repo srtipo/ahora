@@ -9,7 +9,7 @@ import { getNowTasksDoneToday, seedNowTasks } from "@/core/now";
  */
 export function useGetNowTasksDoneToday() {
   return useQuery({
-    queryKey: ["app", "nowTasksDoneToday"],
+    queryKey: ["nowTasksDoneToday"],
     queryFn: async () => {
       // Temporary, for development only: the sample data and the file that
       // writes it go away together.
