@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
 export default function NowScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
-  const { data: tasks = [] } = useGetNowTasks();
-  const { data: done = [] } = useGetNowTasksDoneToday();
+  const { data: tasks = [], isLoading: loadingTasks } = useGetNowTasks();
+  const { data: done = [], isLoading: loadingDone } = useGetNowTasksDoneToday();
   const [text, setText] = useState("");
 
   // The completed ones go first and the others after them, in one list:
@@ -80,7 +80,7 @@ export default function NowScreen() {
         ]}
         keyboardShouldPersistTaps="handled"
       >
-        <NowTaskList tasks={list} />
+        <NowTaskList tasks={list} loading={loadingTasks || loadingDone} />
 
         <TextField
           variant="marked"

@@ -85,7 +85,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
             useGetNowTasks.ts
             useGetNowTasksDoneToday.ts
           presentation/
-            components/now-task-list.component.tsx
+            components/now-task-list.tsx
             screens/now.screen.tsx
         clock/                -- la pantalla del Bloque (todavía no)
       core/                 -- el API del dominio: las reglas y la base
