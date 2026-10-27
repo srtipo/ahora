@@ -26,6 +26,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
   solo, sin plugin de Babel)
 - **Estado:** React Query (@tanstack/react-query): el loading y el cache, un hook por acción
 - **Persistencia:** expo-sqlite (SQLite: el buzón, las tres y el bloque corriendo sobreviven a que la app se cierre)
+- **Ids:** expo-crypto (UUID v4 de las tareas: el random sale del generador del sistema, no de `Math.random`)
 - **Notificaciones:** expo-notifications (el aviso local del final del bloque)
 - **Haptics:** expo-haptics (los tics de "Empezar" y "hecho")
 - **Gestos:** react-native-gesture-handler + react-native-reanimated (el swipe de "Sacar de hoy")
@@ -92,6 +93,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
         index.ts              -- el barril: lo que la app puede importar
         types.ts              -- la tarea de now
         dates.ts              -- los helpers de fecha
+        ids.ts                -- los ids de las tareas (UUID v4)
         db/                   -- SQLite: la base, la forma y las migraciones
           index.ts              -- el barril
           database.ts           -- la conexión y las migraciones
@@ -100,6 +102,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           schema.ts             -- la forma de la base
         now/                  -- las reglas de las tareas de ahora
           index.ts
+          addNowTask.handler.ts
           getNowTasks.handler.ts
           getNowTasksDoneToday.handler.ts
           repository.ts         -- el SQL de las tareas de ahora
@@ -162,8 +165,15 @@ Las reglas:
 
 - **La completada de hoy va primero.** La lista de ahora muestra las tareas
   completadas hoy arriba y las demás después, sin nada que las separe.
+- **La marcada va primero.** En la lista de ahora, la marcada va arriba
+  aunque sea la más nueva, y las demás van de la más vieja a la más nueva.
 - **Lo que está `done` sale de la lista.** Deja de ser una tarea de ahora, pero
   queda guardada, con el momento en que se completó.
+- **Siempre hay tres abiertas.** Cuando entra una cuarta, deja la tabla la
+  que menos importa: la que no está marcada y, entre las que no lo están, la
+  más nueva. La
+  tarea que sale va al buzón, que todavía no existe: por ahora se borra, y
+  cuando el buzón llegue se escribe en `stack_task` en el mismo lugar.
 - **La marca es un booleano.** No es un estado: la tarea sigue siendo la que
   es y además se ve resaltada.
 - **La base es la que valida.** Cada consulta va por un índice o por la
@@ -185,5 +195,5 @@ Las reglas:
 En construcción. Hoy están la pantalla de *Ahora* (las tareas de now, las
 completadas de hoy arriba y el campo para anotar), el sistema de diseño y el
 estado con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`.
-Falta el bloque de cinco minutos, el buzón, la escritura de tareas y el aviso
-del final.
+El campo de Ahora ya anota: la regla de las tres y la escritura están en el
+core. Falta el bloque de cinco minutos, el buzón y el aviso del final.
