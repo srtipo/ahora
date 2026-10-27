@@ -1,6 +1,5 @@
 import { StyleSheet, Text, type StyleProp, type TextStyle } from "react-native";
-import { fontFamily, lineHeight } from "../../theme/fonts";
-import { useTheme } from "../../theme/ThemeProvider";
+import { fontFamily, lineHeight, useTheme } from "@/theme";
 
 export type CountdownProps = {
   /** Seconds left. Anything below zero is shown as zero. */
