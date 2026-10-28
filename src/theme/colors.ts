@@ -1,6 +1,13 @@
 export type Palette = {
   /** Screen background */
   bg: string;
+  /**
+   * The background with no alpha.
+   *
+   * It is the end of the fade that dissolves the list: the same color as the
+   * background, but transparent, so the two mix without a dark edge.
+   */
+  bgFade: string;
   /** Cards and text fields */
   surface: string;
   /** Inbox rows: a soft gray card, between the background and the card */
@@ -27,6 +34,7 @@ export type Palette = {
 
 export const light: Palette = {
   bg: "#FAFAF8",
+  bgFade: "rgba(250, 250, 248, 0)",
   surface: "#FFFFFF",
   surfaceMuted: "#F2F2EF",
   border: "#E7E7E2",
@@ -42,6 +50,7 @@ export const light: Palette = {
 
 export const dark: Palette = {
   bg: "#141413",
+  bgFade: "rgba(20, 20, 19, 0)",
   surface: "#1E1E1C",
   surfaceMuted: "#232320",
   border: "#33322E",
