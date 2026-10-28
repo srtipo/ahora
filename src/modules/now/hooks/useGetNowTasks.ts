@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getNowTasks, seedNowTasks } from "@/core/now";
+import { getNowTasks } from "@/core/now";
 
 /**
  * The tasks of now, the oldest first.
@@ -10,12 +10,6 @@ import { getNowTasks, seedNowTasks } from "@/core/now";
 export function useGetNowTasks() {
   return useQuery({
     queryKey: ["nowTasks"],
-    queryFn: async () => {
-      // Temporary, for development only: the sample data and the file that
-      // writes it go away together.
-      if (__DEV__) await seedNowTasks();
-
-      return getNowTasks();
-    },
+    queryFn: () => getNowTasks(),
   });
 }

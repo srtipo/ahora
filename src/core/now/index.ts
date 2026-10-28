@@ -9,4 +9,3 @@ export {
   listNowTasksDoneToday,
 } from "./repository";
 export type { NewNowTask } from "./repository";
-export { seedNowTasks } from "./seed";
