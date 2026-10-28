@@ -72,7 +72,7 @@ El hueco entre el campo y la primera tarea del buzón no está vacío: es una ba
 
 **Íconos.** Tres, en `src/presentation/icons/`: *Sacar de hoy* (`Tray`, bandeja con flecha hacia adentro, #8E8E88), *Hecho* (`Check`, tilde) y el chevron del *‹ Ahora* (`Chevron`). Los tres son de trazo y tienen el mismo grosor (1,5). No hay ícono de arranque. La bandeja no se dibuja adentro de la tarjeta: se inyecta como dependencia (`tray={Tray}`), igual que el botón recibe su ícono. La tilde de la tarea completada, en cambio, es parte de la propia tarjeta.
 
-**Avisos.** Una sola superficie: un toast que baja del borde superior, píldora de 40 px de alto y radio 20, tinta #1A1A1A con texto blanco para confirmaciones y terracota para errores. Los mensajes son "Anotada", "No se pudo guardar. Probá de nuevo." y "No te puedo avisar cuando termine."
+**Avisos.** Una sola superficie: un toast que baja del borde superior, píldora de 40 px de alto y radio 20, tinta #1A1A1A con texto blanco para confirmaciones y terracota para errores. Los mensajes son "Anotada", "No se pudo guardar. Probá de nuevo." y "No te puedo avisar cuando termine." El aviso no se lleva el foco: los botones de la app no lo toman (la app es de dedo), así que el sistema no les dibuja el anillo de foco encima cuando el aviso aparece.
 
 **Icono de la app.** Cronómetro: aro terracota con la coronita despegada arriba y el punto al centro, sobre fondo crema #FAFAF8.
 
@@ -127,6 +127,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
         cards/                -- TaskCard, InboxItem
         fields/               -- TextField
         icons/                -- Icons: Tray, Check, Chevron
+        pressable.ts          -- los props que sacan a un boton del foco
         toasts/               -- Toast, ToastProvider
         timers/               -- Countdown
       theme/                -- los tokens
