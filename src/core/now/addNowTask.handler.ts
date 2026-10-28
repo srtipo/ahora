@@ -1,4 +1,5 @@
 import { withTransaction } from "@/core/db";
+import { insertStackTask, type NewStackTask } from "@/core/stack";
 import type { NowTaskStatus } from "@/core/types";
 import {
   deleteNowTask,
@@ -42,6 +43,10 @@ const OPEN: NowTaskStatus[] = ["todo", "inProgress"];
  * and nothing else happens. If the three are taken, the one that matters
  * the least leaves to make room for the new one: the last of the order,
  * which is the unmarked one and, among those, the newest.
+ *
+ * The one that leaves does not get lost: it goes to the stack, which is
+ * where the tasks wait. The two writes are in the same transaction, so the
+ * task is never in both tables and never in neither.
  */
 export async function addNowTask(task: NowTaskToAdd): Promise<void> {
   // The moment is taken before the transaction: the task has the age it
@@ -62,10 +67,19 @@ export async function addNowTask(task: NowTaskToAdd): Promise<void> {
       const out = open.slice(open.length - leaving);
 
       for (const going of out) {
-        // The task leaves now. The inbox does not exist yet, so there is
-        // nowhere else for it to go and it is deleted. When the inbox
-        // arrives, this is where it is written to the stack (`stack_task`)
-        // instead of being deleted, in the same transaction.
+        // The task leaves now and goes to the stack: it keeps its name, its
+        // mark and the moment it was written. The mark belongs to the task,
+        // so moving it to another table does not change it: the one that
+        // waits in the stack can be the marked one.
+        const moved: NewStackTask = {
+          name: going.name,
+          marked: going.marked,
+          createdAt: going.createdAt,
+        };
+
+        // The write to the stack comes first: if it fails, the transaction
+        // rolls back and the task stays in now instead of being nowhere.
+        await insertStackTask(db, moved);
         await deleteNowTask(db, going.id);
       }
     }
