@@ -21,6 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { Check, type IconProps } from "@/presentation/icons";
+import { NO_INPUT_FOCUS } from "@/presentation/pressable";
 import { fontFamily, lineHeight, useTheme } from "@/theme";
 
 /**
@@ -215,6 +216,7 @@ export function TaskCard({
 
         <Animated.View style={cardStyle}>
           <Pressable
+            {...NO_INPUT_FOCUS}
             accessibilityRole="button"
             accessibilityLabel={accessibilityLabel ?? text}
             accessibilityState={{ selected: marked }}

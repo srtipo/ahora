@@ -7,6 +7,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import type { IconProps } from "@/presentation/icons";
+import { NO_INPUT_FOCUS } from "@/presentation/pressable";
 import { fontFamily, lineHeight, useTheme } from "@/theme";
 
 export type BackLinkProps = {
@@ -76,6 +77,7 @@ export function BackLink({
 
   return (
     <Pressable
+      {...NO_INPUT_FOCUS}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? text}
       accessibilityState={{ disabled }}

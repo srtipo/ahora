@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from "react-native";
 import type { IconProps } from "@/presentation/icons";
+import { NO_INPUT_FOCUS } from "@/presentation/pressable";
 import { fontFamily, lineHeight, useTheme } from "@/theme";
 import { Spinner } from "./Spinner";
 
@@ -100,6 +101,7 @@ export function Button({
 
   return (
     <Pressable
+      {...NO_INPUT_FOCUS}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? text}
       accessibilityState={{ disabled: inactive, busy: loading }}
