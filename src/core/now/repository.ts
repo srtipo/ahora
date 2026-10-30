@@ -37,11 +37,16 @@ function toNowTask(row: NowTaskRow): NowTask {
  * A task that is added to the table.
  *
  * The name, the mark and the moment come from the caller: the repository
- * does not decide them, it only writes them. The id is not asked for
- * either: the repository gives one to the task. The status is not asked for
- * either: a task that is added is a task to do.
+ * does not decide them, it only writes them. The id is asked for only when
+ * the task comes from another table: a task that moves keeps the one it
+ * had, because it is the same task and not a copy of it. A new task does not
+ * bring one: the repository gives it, so two tasks written in the same
+ * millisecond do not share it. The status is not asked for either: a task
+ * that is added is a task to do.
  */
 export type NewNowTask = {
+  /** Its own id, when the task comes from another table. */
+  id?: string;
   /** What the user wrote. */
   name: string;
   /** It is drawn highlighted. */
@@ -127,8 +132,9 @@ export async function listNowTasksDoneToday(
  *
  * The task is written as a task to do and without a moment of completion:
  * the ones that are in progress and the ones that are done come later, with
- * the actions that move them. The id is given here, not asked for: two
- * tasks written in the same millisecond do not share it.
+ * the actions that move them. The id is given here when the task brings
+ * one, and made up here when it does not: two tasks written in the same
+ * millisecond do not share it.
  */
 export async function insertNowTask(
   db: Executor,
@@ -137,7 +143,31 @@ export async function insertNowTask(
   await db.runAsync(
     `INSERT INTO now_tasks (id, name, status, marked, created_at, completed_at)
      VALUES (?, ?, 'todo', ?, ?, NULL)`,
-    [newId(), task.name, task.marked ? 1 : 0, task.createdAt],
+    [task.id ?? newId(), task.name, task.marked ? 1 : 0, task.createdAt],
+  );
+}
+
+/**
+ * Marks a task of now as done.
+ *
+ * The task stays in the table: a done task is not deleted, it is kept with
+ * the moment it was completed, so that the row of the completed ones of the
+ * day can be drawn above the three.
+ *
+ * The moment of completion comes from the caller: the repository does not
+ * decide when the task was done, it only writes it. If the task was already
+ * done, the moment is replaced by the new one.
+ */
+export async function completeNowTaskById(
+  db: Executor,
+  id: string,
+  completedAt: number,
+): Promise<void> {
+  await db.runAsync(
+    `UPDATE now_tasks
+     SET status = 'done', completed_at = ?
+     WHERE id = ?`,
+    [completedAt, id],
   );
 }
 

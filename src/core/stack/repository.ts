@@ -74,3 +74,13 @@ export async function insertStackTask(
     [newId(), task.name, task.marked ? 1 : 0, task.createdAt],
   );
 }
+
+/**
+ * Removes a task from the table of the tasks of the stack.
+ *
+ * It is the way out of the stack: the task that goes to now does not stay
+ * waiting here.
+ */
+export async function deleteStackTask(db: Executor, id: string): Promise<void> {
+  await db.runAsync("DELETE FROM stack_task WHERE id = ?", [id]);
+}
