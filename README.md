@@ -31,6 +31,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Haptics:** expo-haptics (los tics de "Empezar" y "hecho")
 - **Gestos:** react-native-gesture-handler + react-native-reanimated (el swipe de "Sacar de hoy")
 - **Iconos:** react-native-svg (trazados a mano desde el SVG de Penpot, no una librería de íconos)
+- **Degradado:** expo-linear-gradient (la banda donde la lista se disuelve al llegar al campo)
 - **Tipografía:** Inter Tight (OFL), empaquetada en `assets/fonts/` y cargada con expo-font
 - **Safe area:** react-native-safe-area-context
 - **Gestor de paquetes:** pnpm
@@ -65,9 +66,13 @@ Ninguna tiene ancho propio: las dos se estiran al ancho de la lista, así que el
 
 **Tres pantallas.** *Ahora* (las tres tareas, campo para anotar, pastilla "Buzón" arriba a la derecha), *Bloque* (reloj de 5:00 y botón), *Buzón* (todo lo pendiente, ordenado solo, campo para anotar). Sin barra inferior. Los links de vuelta dicen "‹ Ahora".
 
+El campo del *Buzón* vive fuera del scroll, arriba de la lista: sólo las tareas scrollean, así que anotar es posible con la lista larga. En el *Ahora* el campo sí va dentro, porque la lista son tres y no hay nada que scrollear.
+
+El hueco entre el campo y la primera tarea del buzón no está vacío: es una banda de 24 px con un degradado (expo-linear-gradient) que va del fondo de la app al fondo transparente. La lista pasa por debajo del campo y se disuelve ahí, en vez de cortarse justo en su borde. La banda es siempre la misma: no aparece ni desaparece, sólo cambia lo que hay debajo. El hueco es el que deja el diseño; el degradado lo hace transición.
+
 **Íconos.** Tres, en `src/presentation/icons/`: *Sacar de hoy* (`Tray`, bandeja con flecha hacia adentro, #8E8E88), *Hecho* (`Check`, tilde) y el chevron del *‹ Ahora* (`Chevron`). Los tres son de trazo y tienen el mismo grosor (1,5). No hay ícono de arranque. La bandeja no se dibuja adentro de la tarjeta: se inyecta como dependencia (`tray={Tray}`), igual que el botón recibe su ícono. La tilde de la tarea completada, en cambio, es parte de la propia tarjeta.
 
-**Avisos.** Una sola superficie: un toast que baja del borde superior, píldora de 40 px de alto y radio 20, tinta #1A1A1A con texto blanco para confirmaciones y terracota para errores. Los mensajes son "Anotada", "No se pudo guardar. Probá de nuevo." y "No te puedo avisar cuando termine."
+**Avisos.** Una sola superficie: un toast que baja del borde superior, píldora de 40 px de alto y radio 20, tinta #1A1A1A con texto blanco para confirmaciones y terracota para errores. Los mensajes son "Anotada", "No se pudo guardar. Probá de nuevo." y "No te puedo avisar cuando termine." El aviso no se lleva el foco: los botones de la app no lo toman (la app es de dedo), así que el sistema no les dibuja el anillo de foco encima cuando el aviso aparece.
 
 **Icono de la app.** Cronómetro: aro terracota con la coronita despegada arriba y el punto al centro, sobre fondo crema #FAFAF8.
 
@@ -122,12 +127,12 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           index.ts
           getStackTasks.handler.ts
           repository.ts         -- el SQL de las tareas del buzón
-          seed.ts               -- la muestra de desarrollo
       presentation/         -- la UI base, por tipo de componente
         buttons/              -- Button, PillButton, BackLink, Spinner
         cards/                -- TaskCard, InboxItem
         fields/               -- TextField
         icons/                -- Icons: Tray, Check, Chevron
+        pressable.ts          -- los props que sacan a un boton del foco
         toasts/               -- Toast, ToastProvider
         timers/               -- Countdown
       theme/                -- los tokens
@@ -184,17 +189,24 @@ Las reglas:
   completadas hoy arriba y las demás después, sin nada que las separe.
 - **La marcada va primero.** En la lista de ahora, la marcada va arriba
   aunque sea la más nueva, y las demás van de la más vieja a la más nueva.
+- **La marca es de la tarea.** La que sale de las tres al buzón conserva la
+  suya, porque cambiar de tabla no cambia la tarea. Por ahora puede haber
+  más de una marcada: la marca única llega con la acción de marcar (el
+  toque largo del buzón), que todavía no está.
 - **El buzón se ordena solo.** Sus tareas (la tabla `stack_task`) se leen con
   el mismo orden: la marcada primero, aunque sea la más nueva, y las demás de
-  la más vieja a la más nueva. Por ahora el buzón sólo se lee: no hay
-  todavía pantalla que lo dibuje ni regla que lo escriba.
+  la más vieja a la más nueva. El buzón se lee y se escribe: lo que se anota
+  en su campo entra en `stack_task`, sin marcar, y también entra lo que sale
+  de las tres.
 - **Lo que está `done` sale de la lista.** Deja de ser una tarea de ahora, pero
   queda guardada, con el momento en que se completó.
 - **Siempre hay tres abiertas.** Cuando entra una cuarta, deja la tabla la
   que menos importa: la que no está marcada y, entre las que no lo están, la
-  más nueva. La
-  tarea que sale va al buzón, que todavía no existe: por ahora se borra, y
-  cuando el buzón llegue se escribe en `stack_task` en el mismo lugar.
+  más nueva. La tarea que sale va al buzón: se escribe en `stack_task` y se
+  borra de `now_tasks`, todo en la misma transacción, así que no hay un
+  momento en que esté en las dos tablas ni en ninguna. Conserva su marca: la
+  marca es de la tarea y no de la lista, así que cambiar de tabla no la
+  pierde, y una tarea marcada puede estar esperando en el buzón.
 - **La marca es un booleano.** No es un estado: la tarea sigue siendo la que
   es y además se ve resaltada.
 - **La base es la que valida.** Cada consulta va por un índice o por la
@@ -214,12 +226,12 @@ Las reglas:
 ## Estado de la app
 
 En construcción. Hoy están la pantalla de *Ahora* (las tareas de now, las
-completadas de hoy arriba y el campo para anotar), el sistema de diseño y el
-estado con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`.
-El campo de Ahora ya anota: la regla de las tres y la escritura están en el
-core. El del buzón todavía no: el campo está, pero lo que se escribe en él no
-se guarda todavía. La pantalla del *Bloque* tiene el nombre de la tarea, el
-contador y el botón "Empezar": apretarlo arranca la cuenta atrás de los cinco
-minutos. El reloj todavía vive en la pantalla, así que no sobrevive a que la
-app se cierre: faltan el timestamp de arranque en la base, el aviso del final
-y el botón "hecho".
+completadas de hoy arriba y el campo para anotar), la pantalla del *Buzón* (las
+tareas que todavía no entraron y su campo), el sistema de diseño y el estado
+con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`. Los
+dos campos anotan y la regla de las tres está en el core: la que no entra va al
+buzón. La pantalla del *Bloque* tiene el nombre de la tarea, el contador y el
+botón "Empezar": apretarlo arranca la cuenta atrás de los cinco minutos. El
+reloj todavía vive en la pantalla, así que no sobrevive a que la app se cierre:
+faltan el timestamp de arranque en la base, el aviso del final y el botón
+"hecho".

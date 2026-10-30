@@ -5,6 +5,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { NO_INPUT_FOCUS } from "@/presentation/pressable";
 import { fontFamily, lineHeight, useTheme } from "@/theme";
 
 /**
@@ -74,6 +75,7 @@ export function InboxItem({
 
   return (
     <Pressable
+      {...NO_INPUT_FOCUS}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? text}
       accessibilityState={{ selected: marked }}

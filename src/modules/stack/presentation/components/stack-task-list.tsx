@@ -4,9 +4,6 @@ import { Spinner } from "@/presentation/buttons";
 import { InboxItem, type InboxItemState } from "@/presentation/cards";
 import { useTheme } from "@/theme";
 
-/** The gap between the field and the list. */
-const TOP_GAP = 32;
-
 /** The gap between the rows of the list. */
 const ROW_GAP = 8;
 
@@ -18,11 +15,9 @@ const ROW_HEIGHT = 48;
 
 const styles = StyleSheet.create({
   list: {
-    marginTop: TOP_GAP,
     gap: ROW_GAP,
   },
   loading: {
-    marginTop: TOP_GAP,
     minHeight: ROW_HEIGHT,
     alignItems: "center",
     justifyContent: "center",
