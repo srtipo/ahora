@@ -72,7 +72,7 @@ const FONT_SIZE = 16;
  * The tick of the completed card.
  *
  * The tick belongs to the card: it is the sign of the "done" state, the same
- * one the "hecho" button uses, so it is not injected.
+ * one the "Hecho" button uses, so it is not injected.
  */
 const CHECK_SIZE = 20;
 

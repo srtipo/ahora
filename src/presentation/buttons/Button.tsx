@@ -13,7 +13,7 @@ export type ButtonSize = "large" | "medium" | "small";
  *
  * "pressed" is not a state: the `Pressable` handles it internally. "done" is not
  * one either: it is a regular button with the check mark icon and the text
- * "hecho".
+ * "Hecho".
  */
 export type ButtonState = "default" | "loading";
 
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
  * The primary button.
  *
  * Terracotta, with the label of the action. It is the button of the block: it
- * says "Empezar" and, when the block is over, it says "hecho" with the check
+ * says "Empezar" and, when the block is over, it says "Hecho" with the check
  * mark.
  */
 export function Button({

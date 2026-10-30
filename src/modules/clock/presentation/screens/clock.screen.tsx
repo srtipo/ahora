@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetNowTask } from "@/modules/clock/hooks";
+import { DoneButton } from "@/modules/clock/presentation/components";
 import { BackLink, Button } from "@/presentation/buttons";
 import { Chevron } from "@/presentation/icons";
 import { Countdown } from "@/presentation/timers";
@@ -138,12 +139,21 @@ export default function ClockScreen() {
 
         <Countdown seconds={seconds} style={styles.timer} />
 
-        <Button
-          text="Empezar"
-          disabled={running}
-          onPress={onStart}
-          style={styles.button}
-        />
+        {/*
+          The block has one button at a time: "Empezar" before the countdown
+          starts and "Hecho" after. The task can only be made done inside
+          the block, so the button of the block is the one that appears
+          when the countdown starts.
+        */}
+        {startedAt === null ? (
+          <Button text="Empezar" onPress={onStart} style={styles.button} />
+        ) : (
+          <DoneButton
+            taskId={task}
+            onDone={() => router.back()}
+            style={styles.button}
+          />
+        )}
       </View>
     </View>
   );
