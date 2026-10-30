@@ -48,6 +48,13 @@ export type NowTaskListProps = {
   tasks: NowTask[];
   /** Whether the tasks are still being read. */
   loading?: boolean;
+  /**
+   * Action when a task is tapped.
+   *
+   * The list does not decide what happens: it tells, and the screen does the
+   * rest.
+   */
+  onPressTask?: (task: NowTask) => void;
 };
 
 /**
@@ -57,7 +64,11 @@ export type NowTaskListProps = {
  * with the spinner; the empty one, that draws nothing and leaves the screen
  * with the title and the field, in silence; and the one with tasks.
  */
-export function NowTaskList({ tasks, loading = false }: NowTaskListProps) {
+export function NowTaskList({
+  tasks,
+  loading = false,
+  onPressTask,
+}: NowTaskListProps) {
   const { palette } = useTheme();
 
   if (loading) {
@@ -73,7 +84,15 @@ export function NowTaskList({ tasks, loading = false }: NowTaskListProps) {
   return (
     <View style={styles.list}>
       {tasks.map((task) => (
-        <TaskCard key={task.id} text={task.name} state={cardState(task)} />
+        <TaskCard
+          key={task.id}
+          text={task.name}
+          state={cardState(task)}
+          // A task that is already done does not open a block: it is over.
+          onPress={
+            task.status === "done" ? undefined : () => onPressTask?.(task)
+          }
+        />
       ))}
     </View>
   );

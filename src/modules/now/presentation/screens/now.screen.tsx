@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { NowTask } from "@/core";
 import { useAddNowTask, useGetNowTasks, useGetNowTasksDoneToday } from "@/modules/now/hooks";
 import { NowTaskList } from "@/modules/now/presentation/components";
 import { PillButton } from "@/presentation/buttons";
@@ -85,6 +86,13 @@ export default function NowScreen() {
     );
   };
 
+  // Tapping a card does not start the clock: it takes you to the block
+  // screen, and there is where the clock starts. The id of the task goes in
+  // the route, because the block is about that task.
+  const openBlock = (task: NowTask) => {
+    router.push({ pathname: "/clock", params: { task: task.id } });
+  };
+
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
       <View style={[styles.header, { paddingTop: insets.top + TOP }]}>
@@ -116,7 +124,11 @@ export default function NowScreen() {
         ]}
         keyboardShouldPersistTaps="handled"
       >
-        <NowTaskList tasks={list} loading={loadingTasks || loadingDone} />
+        <NowTaskList
+          tasks={list}
+          loading={loadingTasks || loadingDone}
+          onPressTask={openBlock}
+        />
 
         <TextField
           variant="marked"

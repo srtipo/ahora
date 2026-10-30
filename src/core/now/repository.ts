@@ -79,6 +79,27 @@ export async function listNowTasks(
 }
 
 /**
+ * The task with the given id.
+ *
+ * It is the one task that the block screen asks for: the one that was tapped
+ * in Ahora. If there is no task with that id there is nothing: the task left
+ * the table, or the id is not one of ours.
+ */
+export async function getNowTaskById(
+  db: Executor,
+  id: string,
+): Promise<NowTask | null> {
+  const row = await db.getFirstAsync<NowTaskRow>(
+    `SELECT id, name, status, marked, created_at, completed_at
+     FROM now_tasks
+     WHERE id = ?`,
+    [id],
+  );
+
+  return row ? toNowTask(row) : null;
+}
+
+/**
  * The tasks that were completed in a day, the most recent first.
  *
  * The day is the one of the clock of the phone: from its first minute to

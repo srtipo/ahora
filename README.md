@@ -85,7 +85,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
         _layout.tsx           -- raíz: SafeAreaProvider + ThemeProvider + QueryClientProvider + ToastProvider
         index.tsx             -- Ahora → re-export de modules/now/presentation/screens/now.screen
         buzon.tsx            -- Buzón → re-export de modules/stack/presentation/screens/stack.screen
-        bloque.tsx            -- Bloque (todavía no)
+        clock.tsx            -- Bloque → re-export de modules/clock/presentation/screens/clock.screen
       modules/              -- un módulo por funcionalidad
         now/                  -- la pantalla de Ahora
           hooks/                 -- un hook por accion del core
@@ -100,7 +100,11 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           presentation/
             components/stack-task-list.tsx
             screens/stack.screen.tsx
-        clock/                -- la pantalla del Bloque (todavía no)
+        clock/               -- la pantalla del Bloque
+          hooks/                 -- un hook por accion del core
+            useGetNowTask.ts
+          presentation/
+            screens/clock.screen.tsx
       core/                 -- el API del dominio: las reglas y la base
         index.ts              -- el barril: lo que la app puede importar
         types.ts              -- las tareas de now y del buzón
@@ -115,6 +119,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
         now/                  -- las reglas de las tareas de ahora
           index.ts
           addNowTask.handler.ts
+          getNowTask.handler.ts
           getNowTasks.handler.ts
           getNowTasksDoneToday.handler.ts
           repository.ts         -- el SQL de las tareas de ahora
@@ -225,4 +230,8 @@ completadas de hoy arriba y el campo para anotar), la pantalla del *Buzón* (las
 tareas que todavía no entraron y su campo), el sistema de diseño y el estado
 con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`. Los
 dos campos anotan y la regla de las tres está en el core: la que no entra va al
-buzón. Falta el bloque de cinco minutos y el aviso del final.
+buzón. La pantalla del *Bloque* tiene el nombre de la tarea, el contador y el
+botón "Empezar": apretarlo arranca la cuenta atrás de los cinco minutos. El
+reloj todavía vive en la pantalla, así que no sobrevive a que la app se cierre:
+faltan el timestamp de arranque en la base, el aviso del final y el botón
+"hecho".
