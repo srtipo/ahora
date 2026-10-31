@@ -172,6 +172,18 @@ export async function completeNowTaskById(
 }
 
 /**
+ * Takes the mark away from every task of now.
+ *
+ * The mark is one in the whole app: the task that the user pointed at is
+ * the only one that keeps it, and the ones that were marked before lose it.
+ * The tasks that are done keep their row and their moment: only the mark
+ * goes.
+ */
+export async function unmarkNowTasks(db: Executor): Promise<void> {
+  await db.runAsync("UPDATE now_tasks SET marked = 0");
+}
+
+/**
  * Removes a task from the table of the tasks of now.
  *
  * It is the way out of now: the task that leaves the three does not stay

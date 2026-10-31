@@ -76,6 +76,52 @@ export async function insertStackTask(
 }
 
 /**
+ * The task of the stack with the given id.
+ *
+ * If there is no task with that id there is nothing: the id is not one of
+ * ours, or the task is not waiting anymore.
+ */
+export async function getStackTaskById(
+  db: Executor,
+  id: string,
+): Promise<StackTask | null> {
+  const row = await db.getFirstAsync<StackTaskRow>(
+    `SELECT id, name, marked, created_at
+     FROM stack_task
+     WHERE id = ?`,
+    [id],
+  );
+
+  return row ? toStackTask(row) : null;
+}
+
+/**
+ * Marks a task of the stack as the priority one.
+ *
+ * The mark is written and nothing else is decided here: who loses it is
+ * the one that asks for it, because the rule is of the whole app.
+ */
+export async function markStackTaskById(
+  db: Executor,
+  id: string,
+): Promise<void> {
+  await db.runAsync("UPDATE stack_task SET marked = 1 WHERE id = ?", [id]);
+}
+
+/**
+ * Takes the mark away from every task of the stack but one.
+ *
+ * The one that is left out is the task that keeps it: it is the one the
+ * user marked, and the mark is one in the whole app.
+ */
+export async function unmarkStackTasks(
+  db: Executor,
+  exceptId: string,
+): Promise<void> {
+  await db.runAsync("UPDATE stack_task SET marked = 0 WHERE id <> ?", [exceptId]);
+}
+
+/**
  * Removes a task from the table of the tasks of the stack.
  *
  * It is the way out of the stack: the task that goes to now does not stay

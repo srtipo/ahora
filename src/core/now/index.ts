@@ -11,5 +11,6 @@ export {
   insertNowTask,
   listNowTasks,
   listNowTasksDoneToday,
+  unmarkNowTasks,
 } from "./repository";
 export type { NewNowTask } from "./repository";

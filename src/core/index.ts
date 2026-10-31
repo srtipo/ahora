@@ -1,6 +1,7 @@
 export { startOfDay, startOfNextDay } from "./dates";
 export { newId } from "./ids";
 export type { NowTask, NowTaskStatus, StackTask } from "./types";
+export { markStackTask } from "./mark";
 export {
   addNowTask,
   completeNowTask,
