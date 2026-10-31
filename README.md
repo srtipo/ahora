@@ -97,6 +97,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
         stack/                -- la pantalla del Buzón
           hooks/                 -- un hook por accion del core
             useGetStackTasks.ts
+            useMarkStackTask.ts
           presentation/
             components/stack-task-list.tsx
             screens/stack.screen.tsx
@@ -131,6 +132,9 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           addStackTask.handler.ts
           getStackTasks.handler.ts
           repository.ts         -- el SQL de las tareas del buzón
+        mark/                 -- la marca: la prioridad de la app
+          index.ts
+          markStackTask.handler.ts  -- la marca es una en toda la app
       presentation/         -- la UI base, por tipo de componente
         buttons/              -- Button, PillButton, BackLink, Spinner
         cards/                -- TaskCard, InboxItem
@@ -194,9 +198,14 @@ Las reglas:
 - **La marcada va primero.** En la lista de ahora, la marcada va arriba
   aunque sea la más nueva, y las demás van de la más vieja a la más nueva.
 - **La marca es de la tarea.** La que sale de las tres al buzón conserva la
-  suya, porque cambiar de tabla no cambia la tarea. Por ahora puede haber
-  más de una marcada: la marca única llega con la acción de marcar (el
-  toque largo del buzón), que todavía no está.
+  suya, porque cambiar de tabla no cambia la tarea.
+- **La marca es una en toda la app.** El toque largo de una fila del buzón
+  marca esa tarea: la que estaba marcada antes —en el buzón o en las tres—
+  pierde la marca. Las tres escrituras van en la misma transacción, así que
+  no hay un momento en que haya dos marcadas ni en que no haya ninguna.
+  Marcar no se desmarca: la marca es una prioridad, no un estado que se
+  apague. Lo que se anota en Ahora sigue naciendo marcada, así que puede
+  haber más de una hasta que se marque una tarea del buzón.
 - **El buzón se ordena solo.** Sus tareas (la tabla `stack_task`) se leen con
   el mismo orden: la marcada primero, aunque sea la más nueva, y las demás de
   la más vieja a la más nueva. El buzón se lee y se escribe: lo que se anota
@@ -240,9 +249,11 @@ completadas de hoy arriba y el campo para anotar), la pantalla del *Buzón* (las
 tareas que todavía no entraron y su campo), el sistema de diseño y el estado
 con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`. Los
 dos campos anotan y la regla de las tres está en el core: la que no entra va al
-buzón. La pantalla del *Bloque* tiene el nombre de la tarea, el contador y el
-botón "Empezar": apretarlo arranca la cuenta atrás de los cinco minutos. En
-cuanto el contador arranca aparece el botón "Hecho": el de completar la tarea,
-que la da por hecha y hace subir la más vieja del buzón. El reloj todavía vive
-en la pantalla, así que no sobrevive a que la app se cierre: faltan el
-timestamp de arranque en la base y el aviso del final.
+buzón. El toque largo de una fila del buzón la marca: la tarea marcada es la
+prioritaria, sube arriba y es la única de toda la app. La pantalla del *Bloque*
+tiene el nombre de la tarea, el contador y el botón "Empezar": apretarlo arranca
+la cuenta atrás de los cinco minutos. En cuanto el contador arranca aparece el
+botón "Hecho": el de completar la tarea, que la da por hecha y hace subir la más
+vieja del buzón. El reloj todavía vive en la pantalla, así que no sobrevive a
+que la app se cierre: faltan el timestamp de arranque en la base y el aviso del
+final.
