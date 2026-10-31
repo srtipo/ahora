@@ -26,15 +26,18 @@ export type NowTaskToAdd = {
  *
  * There are always three: when a fourth one comes, the least priority one
  * leaves to make room for it.
+ *
+ * It is also the number the handler that completes a task uses: the place
+ * that is left free is the one that gets filled from the stack.
  */
-const MAX_OPEN_TASKS = 3;
+export const MAX_OPEN_TASKS = 3;
 
 /**
  * The statuses of the tasks that are open: every one but the done.
  *
  * A task that is done is not in now anymore, so it is not one of the three.
  */
-const OPEN: NowTaskStatus[] = ["todo", "inProgress"];
+export const OPEN_STATUSES: NowTaskStatus[] = ["todo", "inProgress"];
 
 /**
  * Adds a task to now.
@@ -54,7 +57,7 @@ export async function addNowTask(task: NowTaskToAdd): Promise<void> {
   const createdAt = Date.now();
 
   await withTransaction(async (db) => {
-    const open = await listNowTasks(db, OPEN);
+    const open = await listNowTasks(db, OPEN_STATUSES);
 
     // How many have to leave so that the new one fits: one for each place
     // over the three.
