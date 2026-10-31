@@ -3,7 +3,12 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAddStackTask, useGetStackTasks } from "@/modules/stack/hooks";
+import type { StackTask } from "@/core";
+import {
+  useAddStackTask,
+  useGetStackTasks,
+  useMarkStackTask,
+} from "@/modules/stack/hooks";
 import { StackTaskList } from "@/modules/stack/presentation/components";
 import { BackLink } from "@/presentation/buttons";
 import { TextField } from "@/presentation/fields";
@@ -89,6 +94,7 @@ export default function StackScreen() {
   const toast = useToast();
   const { data: tasks = [], isLoading: loading } = useGetStackTasks();
   const { mutate: addTask } = useAddStackTask();
+  const { mutate: markTask } = useMarkStackTask();
   const [text, setText] = useState("");
 
   // The field of the stack never marks: what is written here is born
@@ -110,6 +116,16 @@ export default function StackScreen() {
         },
       },
     );
+  };
+
+  // The long press of a row is the mark: the task becomes the priority one,
+  // the one that was marked before loses it, and the list is ordered again
+  // by itself. The marked row says it with its color, so there is nothing
+  // else to tell.
+  const mark = (task: StackTask) => {
+    markTask(task.id, {
+      onError: () => toast.show("No se pudo guardar. Probá de nuevo.", "error"),
+    });
   };
 
   return (
@@ -152,7 +168,11 @@ export default function StackScreen() {
           ]}
           keyboardShouldPersistTaps="handled"
         >
-          <StackTaskList tasks={tasks} loading={loading} />
+          <StackTaskList
+            tasks={tasks}
+            loading={loading}
+            onLongPressTask={mark}
+          />
         </ScrollView>
 
         <LinearGradient
