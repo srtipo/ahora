@@ -10,7 +10,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Lista cortísima**: máximo 3 tareas abiertas en pantalla. Sin categorías, sin prioridades, sin fechas límite, sin backlog que crezca.
 - **Buzón**: captura libre, sin límite. Es de donde salen las tareas de hoy.
 - **Siempre hay 3 filas**: al completar una, sube sola la más vieja del buzón.
-- **Una sola marca** en toda la app: la teñida de terracota. Marcás una y la anterior pierde la marca. La marcada sube primero, aunque sea más nueva.
+- **La marca** es la teñida de terracota. Marcás una y no le saca la marca a las otras: la marca es de la tarea. Las marcadas suben primero, aunque sean más nuevas.
 - **El bloque**: al llegar dice "Empezar"; cuando el contador arranca ese botón se va y aparece el "Hecho". "Hecho" sólo existe en el bloque, así que marcar implica haber hecho los cinco minutos.
 - **"Sacar de hoy"**: saca esa tarjeta de las tres y la devuelve al buzón.
 - **Sin barra de progreso**: sólo el número. Cuando hacés algo no mirás el teléfono, así que una barra se lee de reojo o no se lee nunca.
@@ -91,6 +91,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           hooks/                 -- un hook por accion del core
             useGetNowTasks.ts
             useGetNowTasksDoneToday.ts
+            useMarkNowTask.ts
           presentation/
             components/now-task-list.tsx
             screens/now.screen.tsx
@@ -126,15 +127,14 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           getNowTask.handler.ts
           getNowTasks.handler.ts
           getNowTasksDoneToday.handler.ts
+          markNowTask.handler.ts
           repository.ts         -- el SQL de las tareas de ahora
         stack/                 -- el buzón: las tareas que todavía no entraron
           index.ts
           addStackTask.handler.ts
           getStackTasks.handler.ts
+          markStackTask.handler.ts
           repository.ts         -- el SQL de las tareas del buzón
-        mark/                 -- la marca: la prioridad de la app
-          index.ts
-          markStackTask.handler.ts  -- la marca es una en toda la app
       presentation/         -- la UI base, por tipo de componente
         buttons/              -- Button, PillButton, BackLink, Spinner
         cards/                -- TaskCard, InboxItem
@@ -199,13 +199,10 @@ Las reglas:
   aunque sea la más nueva, y las demás van de la más vieja a la más nueva.
 - **La marca es de la tarea.** La que sale de las tres al buzón conserva la
   suya, porque cambiar de tabla no cambia la tarea.
-- **La marca es una en toda la app.** El toque largo de una fila del buzón
-  marca esa tarea: la que estaba marcada antes —en el buzón o en las tres—
-  pierde la marca. Las tres escrituras van en la misma transacción, así que
-  no hay un momento en que haya dos marcadas ni en que no haya ninguna.
-  Marcar no se desmarca: la marca es una prioridad, no un estado que se
-  apague. Lo que se anota en Ahora sigue naciendo marcada, así que puede
-  haber más de una hasta que se marque una tarea del buzón.
+- **El toque largo marca.** Apretar una fila del buzón o una tarjeta de las
+  tres marca esa tarea: se tiñe de terracota y la lista se ordena sola con
+  las marcadas arriba. Marcar una no desmarca a las otras: cada tarea lleva
+  su marca, y lo que se anota en las tres nace marcada.
 - **El buzón se ordena solo.** Sus tareas (la tabla `stack_task`) se leen con
   el mismo orden: la marcada primero, aunque sea la más nueva, y las demás de
   la más vieja a la más nueva. El buzón se lee y se escribe: lo que se anota
@@ -249,10 +246,10 @@ completadas de hoy arriba y el campo para anotar), la pantalla del *Buzón* (las
 tareas que todavía no entraron y su campo), el sistema de diseño y el estado
 con su persistencia en SQLite. El modelo es `now_tasks` + `stack_task`. Los
 dos campos anotan y la regla de las tres está en el core: la que no entra va al
-buzón. El toque largo de una fila del buzón la marca: la tarea marcada es la
-prioritaria, sube arriba y es la única de toda la app. La pantalla del *Bloque*
-tiene el nombre de la tarea, el contador y el botón "Empezar": apretarlo arranca
-la cuenta atrás de los cinco minutos. En cuanto el contador arranca aparece el
+buzón. El toque largo de una fila del buzón o de una tarjeta de las tres la
+marca: la tarea marcada se tiñe de terracota y sube arriba. La pantalla del
+*Bloque* tiene el nombre de la tarea, el contador y el
+botón "Empezar": apretarlo arranca la cuenta atrás de los cinco minutos. En cuanto el contador arranca aparece el
 botón "Hecho": el de completar la tarea, que la da por hecha y hace subir la más
 vieja del buzón. El reloj todavía vive en la pantalla, así que no sobrevive a
 que la app se cierre: faltan el timestamp de arranque en la base y el aviso del
