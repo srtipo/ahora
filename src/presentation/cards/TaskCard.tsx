@@ -55,6 +55,13 @@ export type TaskCardProps = {
   onSwipeOut?: () => void;
   /** Action on press. */
   onPress?: () => void;
+  /**
+   * Action on long press.
+   *
+   * The card does not decide what happens: it tells, and the screen does the
+   * rest. Without this prop there is no long press.
+   */
+  onLongPress?: () => void;
   /** Screen reader label. Default: the `text`. */
   accessibilityLabel?: string;
   /** Identifier for tests. */
@@ -135,6 +142,9 @@ const styles = StyleSheet.create({
  *
  * It can be dragged to the right: that is "sacar de hoy". While it drags, the
  * tray appears in the hole it leaves.
+ *
+ * It can also be held down: that is the mark. The card that is marked is the
+ * tinted one, and the list is ordered by itself with the marked ones first.
  */
 export function TaskCard({
   text,
@@ -142,6 +152,7 @@ export function TaskCard({
   tray: Tray,
   onSwipeOut,
   onPress,
+  onLongPress,
   accessibilityLabel,
   testID,
   style,
@@ -220,8 +231,9 @@ export function TaskCard({
             accessibilityRole="button"
             accessibilityLabel={accessibilityLabel ?? text}
             accessibilityState={{ selected: marked }}
-            disabled={!onPress}
+            disabled={!onPress && !onLongPress}
             onPress={onPress}
+            onLongPress={onLongPress}
             testID={testID}
             style={[
               styles.base,

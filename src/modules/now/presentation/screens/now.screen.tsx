@@ -3,7 +3,12 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { NowTask } from "@/core";
-import { useAddNowTask, useGetNowTasks, useGetNowTasksDoneToday } from "@/modules/now/hooks";
+import {
+  useAddNowTask,
+  useGetNowTasks,
+  useGetNowTasksDoneToday,
+  useMarkNowTask,
+} from "@/modules/now/hooks";
 import { NowTaskList } from "@/modules/now/presentation/components";
 import { PillButton } from "@/presentation/buttons";
 import { TextField } from "@/presentation/fields";
@@ -60,6 +65,7 @@ export default function NowScreen() {
   const { data: tasks = [], isLoading: loadingTasks } = useGetNowTasks();
   const { data: done = [], isLoading: loadingDone } = useGetNowTasksDoneToday();
   const { mutate: addTask } = useAddNowTask();
+  const { mutate: markTask } = useMarkNowTask();
   const [text, setText] = useState("");
 
   // The completed ones go first and the others after them, in one list:
@@ -91,6 +97,15 @@ export default function NowScreen() {
   // the route, because the block is about that task.
   const openBlock = (task: NowTask) => {
     router.push({ pathname: "/clock", params: { task: task.id } });
+  };
+
+  // Holding a card down is the mark: the task becomes the priority one and
+  // the list is ordered again by itself. The marked card says it with its
+  // color, so there is nothing else to tell.
+  const mark = (task: NowTask) => {
+    markTask(task.id, {
+      onError: () => toast.show("No se pudo guardar. Probá de nuevo.", "error"),
+    });
   };
 
   return (
@@ -128,6 +143,7 @@ export default function NowScreen() {
           tasks={list}
           loading={loadingTasks || loadingDone}
           onPressTask={openBlock}
+          onLongPressTask={mark}
         />
 
         <TextField

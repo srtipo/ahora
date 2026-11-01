@@ -1,16 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { markStackTask } from "@/core/mark";
+import { markStackTask } from "@/core/stack";
 
 /**
  * Marks a task of the stack as the priority one.
  *
- * The write goes through the core, which is the one that knows the rule of
- * the mark: it is one in the whole app, so the task that was marked before
- * loses it.
+ * The write goes through the core, which is the one that knows what the
+ * mark means: it is of the task, and marking one does not take the mark
+ * away from the others.
  *
- * The cache of the inbox is invalidated because the list changed, and the
- * one of Ahora too: the task that was marked there loses the mark and its
- * card stops being tinted.
+ * When it is done the cache of the list is invalidated, so the screen draws
+ * what is stored and not what it had.
  */
 export function useMarkStackTask() {
   const queryClient = useQueryClient();
@@ -19,7 +18,6 @@ export function useMarkStackTask() {
     mutationFn: (id: string) => markStackTask(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stackTasks"] });
-      queryClient.invalidateQueries({ queryKey: ["nowTasks"] });
     },
   });
 }
