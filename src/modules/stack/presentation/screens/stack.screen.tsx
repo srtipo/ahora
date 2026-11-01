@@ -120,9 +120,10 @@ export default function StackScreen() {
 
   // The long press of a row is the mark: the task becomes the priority one,
   // and pressing it again takes the mark away. The marked row says it with
-  // its color, so there is nothing else to tell.
+  // its color, so the toast is only there to say what happened.
   const mark = (task: StackTask) => {
     markTask(task.id, {
+      onSuccess: () => toast.show(task.marked ? "Desmarcada" : "Marcada"),
       onError: () => toast.show("No se pudo guardar. Probá de nuevo.", "error"),
     });
   };

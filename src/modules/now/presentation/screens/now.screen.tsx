@@ -101,9 +101,10 @@ export default function NowScreen() {
 
   // Holding a card down is the mark: the task becomes the priority one, and
   // holding it again takes the mark away. The marked card says it with its
-  // color, so there is nothing else to tell.
+  // color, so the toast is only there to say what happened.
   const mark = (task: NowTask) => {
     markTask(task.id, {
+      onSuccess: () => toast.show(task.marked ? "Desmarcada" : "Marcada"),
       onError: () => toast.show("No se pudo guardar. Probá de nuevo.", "error"),
     });
   };
