@@ -104,7 +104,7 @@ export default function NowScreen() {
   // color, so the toast is only there to say what happened.
   const mark = (task: NowTask) => {
     markTask(task.id, {
-      onSuccess: () => toast.show(task.marked ? "Desmarcada" : "Marcada"),
+      onSuccess: () => toast.show(task.marked ? "Tarea desmarcada" : "Tarea marcada"),
       onError: () => toast.show("No se pudo guardar. Probá de nuevo.", "error"),
     });
   };
