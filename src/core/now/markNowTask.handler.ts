@@ -1,16 +1,31 @@
 import { withDb } from "@/core/db";
-import { markNowTaskById } from "./repository";
+import {
+  getNowTaskById,
+  markNowTaskById,
+  unmarkNowTaskById,
+} from "./repository";
 
 /**
- * Marks a task of now as the priority one.
+ * Marks a task of now, or takes the mark away if it already had it.
  *
- * The mark belongs to the task: marking one does not take the mark away
- * from the others, and the list is ordered by itself with the marked ones
- * first.
+ * The mark belongs to the task: this only touches the one with that id, and
+ * the tasks around keep the marks they have. So the long press of a card is
+ * a switch: the task is marked, and pressing it again takes the mark away.
  *
- * There is no transaction because the write is a single statement: the
- * database is the one that makes it atomic.
+ * If there is no task with that id there is nothing to mark: the id is old
+ * or the task is not one of ours.
  */
 export async function markNowTask(id: string): Promise<void> {
-  await withDb((db) => markNowTaskById(db, id));
+  await withDb(async (db) => {
+    const task = await getNowTaskById(db, id);
+
+    if (!task) return;
+
+    if (task.marked) {
+      await unmarkNowTaskById(db, id);
+      return;
+    }
+
+    await markNowTaskById(db, id);
+  });
 }

@@ -76,6 +76,26 @@ export async function insertStackTask(
 }
 
 /**
+ * The task of the stack with the given id.
+ *
+ * If there is no task with that id there is nothing: the id is not one of
+ * ours, or the task is not waiting anymore.
+ */
+export async function getStackTaskById(
+  db: Executor,
+  id: string,
+): Promise<StackTask | null> {
+  const row = await db.getFirstAsync<StackTaskRow>(
+    `SELECT id, name, marked, created_at
+     FROM stack_task
+     WHERE id = ?`,
+    [id],
+  );
+
+  return row ? toStackTask(row) : null;
+}
+
+/**
  * Marks a task of the stack as the priority one.
  *
  * The mark is written and nothing else is decided here: who else is marked
@@ -86,6 +106,18 @@ export async function markStackTaskById(
   id: string,
 ): Promise<void> {
   await db.runAsync("UPDATE stack_task SET marked = 1 WHERE id = ?", [id]);
+}
+
+/**
+ * Takes the mark away from a task of the stack.
+ *
+ * Only that task: the ones around keep the marks they have.
+ */
+export async function unmarkStackTaskById(
+  db: Executor,
+  id: string,
+): Promise<void> {
+  await db.runAsync("UPDATE stack_task SET marked = 0 WHERE id = ?", [id]);
 }
 
 /**

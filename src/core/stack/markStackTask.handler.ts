@@ -1,16 +1,32 @@
 import { withDb } from "@/core/db";
-import { markStackTaskById } from "./repository";
+import {
+  getStackTaskById,
+  markStackTaskById,
+  unmarkStackTaskById,
+} from "./repository";
 
 /**
- * Marks a task of the stack as the priority one.
+ * Marks a task of the stack, or takes the mark away if it already had it.
  *
- * The mark belongs to the task: marking one does not take the mark away
- * from the others, and the list is ordered by itself with the marked ones
- * first.
+ * The mark belongs to the task: this only touches the one with that id, and
+ * the tasks around keep the marks they have. So the long press of the inbox
+ * is a switch: the task is marked, and pressing it again takes the mark
+ * away.
  *
- * There is no transaction because the write is a single statement: the
- * database is the one that makes it atomic.
+ * If the task is not waiting in the stack there is nothing to mark: the id
+ * is old, the task left, and the marks that are there stay as they are.
  */
 export async function markStackTask(id: string): Promise<void> {
-  await withDb((db) => markStackTaskById(db, id));
+  await withDb(async (db) => {
+    const task = await getStackTaskById(db, id);
+
+    if (!task) return;
+
+    if (task.marked) {
+      await unmarkStackTaskById(db, id);
+      return;
+    }
+
+    await markStackTaskById(db, id);
+  });
 }

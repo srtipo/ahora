@@ -13,5 +13,6 @@ export {
   listNowTasks,
   listNowTasksDoneToday,
   markNowTaskById,
+  unmarkNowTaskById,
 } from "./repository";
 export type { NewNowTask } from "./repository";
