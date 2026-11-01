@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { markNowTask } from "@/core/now";
 
 /**
- * Marks a task of now as the priority one.
+ * Marks a task of now, or takes the mark away if it already had it.
  *
  * The write goes through the core, which is the one that knows what the
- * mark means: it is of the task, and marking one does not take the mark
+ * mark means: it is of the task, so marking one does not take the mark
  * away from the others.
  *
  * The cache of the list is invalidated because the list changed: the marked

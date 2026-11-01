@@ -10,7 +10,7 @@ La app no organiza tu vida. Te muestra tres tareas, arrancás un bloque de cinco
 - **Lista cortísima**: máximo 3 tareas abiertas en pantalla. Sin categorías, sin prioridades, sin fechas límite, sin backlog que crezca.
 - **Buzón**: captura libre, sin límite. Es de donde salen las tareas de hoy.
 - **Siempre hay 3 filas**: al completar una, sube sola la más vieja del buzón.
-- **La marca** es la teñida de terracota. Marcás una y no le saca la marca a las otras: la marca es de la tarea. Las marcadas suben primero, aunque sean más nuevas.
+- **La marca** es la teñida de terracota. Apretarla de nuevo la desmarca: la marca es un interruptor sobre esa tarea y sólo sobre esa. Marcás una y no le saca la marca a las otras. Las marcadas suben primero, aunque sean más nuevas.
 - **El bloque**: al llegar dice "Empezar"; cuando el contador arranca ese botón se va y aparece el "Hecho". "Hecho" sólo existe en el bloque, así que marcar implica haber hecho los cinco minutos.
 - **"Sacar de hoy"**: saca esa tarjeta de las tres y la devuelve al buzón.
 - **Sin barra de progreso**: sólo el número. Cuando hacés algo no mirás el teléfono, así que una barra se lee de reojo o no se lee nunca.
@@ -199,10 +199,11 @@ Las reglas:
   aunque sea la más nueva, y las demás van de la más vieja a la más nueva.
 - **La marca es de la tarea.** La que sale de las tres al buzón conserva la
   suya, porque cambiar de tabla no cambia la tarea.
-- **El toque largo marca.** Apretar una fila del buzón o una tarjeta de las
-  tres marca esa tarea: se tiñe de terracota y la lista se ordena sola con
-  las marcadas arriba. Marcar una no desmarca a las otras: cada tarea lleva
-  su marca, y lo que se anota en las tres nace marcada.
+- **El toque largo marca o desmarca.** Apretar una fila del buzón o una tarjeta de
+  las tres marca esa tarea: se tiñe de terracota y la lista se ordena sola con
+  las marcadas arriba. Apretarla de nuevo le saca la marca a esa misma tarea
+  y sólo a esa: marcar una nunca desmarca a las otras. Cada tarea lleva su
+  marca, y lo que se anota en las tres nace marcada.
 - **El buzón se ordena solo.** Sus tareas (la tabla `stack_task`) se leen con
   el mismo orden: la marcada primero, aunque sea la más nueva, y las demás de
   la más vieja a la más nueva. El buzón se lee y se escribe: lo que se anota

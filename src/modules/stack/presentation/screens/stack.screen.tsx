@@ -119,9 +119,8 @@ export default function StackScreen() {
   };
 
   // The long press of a row is the mark: the task becomes the priority one,
-  // the one that was marked before loses it, and the list is ordered again
-  // by itself. The marked row says it with its color, so there is nothing
-  // else to tell.
+  // and pressing it again takes the mark away. The marked row says it with
+  // its color, so there is nothing else to tell.
   const mark = (task: StackTask) => {
     markTask(task.id, {
       onError: () => toast.show("No se pudo guardar. Probá de nuevo.", "error"),

@@ -99,8 +99,8 @@ export default function NowScreen() {
     router.push({ pathname: "/clock", params: { task: task.id } });
   };
 
-  // Holding a card down is the mark: the task becomes the priority one and
-  // the list is ordered again by itself. The marked card says it with its
+  // Holding a card down is the mark: the task becomes the priority one, and
+  // holding it again takes the mark away. The marked card says it with its
   // color, so there is nothing else to tell.
   const mark = (task: NowTask) => {
     markTask(task.id, {

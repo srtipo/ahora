@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
  *
  * It can also be held down: that is the mark. The card that is marked is the
  * tinted one, and the list is ordered by itself with the marked ones first.
+ * Holding it again takes the mark away.
  */
 export function TaskCard({
   text,
