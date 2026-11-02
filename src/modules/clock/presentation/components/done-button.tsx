@@ -42,7 +42,7 @@ export function DoneButton({ taskId, onDone, style }: DoneButtonProps) {
         mutate(taskId, {
           onSuccess: onDone,
           onError: () =>
-            toast.show("No se pudo guardar. Probá de nuevo.", "error"),
+            toast.show("No se pudo guardar. Intente nuevamente.", "error"),
         })
       }
       style={style}

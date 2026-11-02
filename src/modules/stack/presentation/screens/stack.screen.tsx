@@ -112,7 +112,7 @@ export default function StackScreen() {
           toast.show("Anotada");
         },
         onError: () => {
-          toast.show("No se pudo guardar. Probá de nuevo.", "error");
+          toast.show("No se pudo guardar. Intente nuevamente.", "error");
         },
       },
     );
@@ -124,7 +124,7 @@ export default function StackScreen() {
   const mark = (task: StackTask) => {
     markTask(task.id, {
       onSuccess: () => toast.show(task.marked ? "Tarea desmarcada" : "Tarea marcada"),
-      onError: () => toast.show("No se pudo guardar. Probá de nuevo.", "error"),
+      onError: () => toast.show("No se pudo guardar. Intente nuevamente.", "error"),
     });
   };
 
