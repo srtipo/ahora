@@ -8,6 +8,7 @@ import {
   useGetNowTasks,
   useGetNowTasksDoneToday,
   useMarkNowTask,
+  useMoveNowTaskToStack,
 } from "@/modules/now/hooks";
 import { NowTaskList } from "@/modules/now/presentation/components";
 import { PillButton } from "@/presentation/buttons";
@@ -66,6 +67,7 @@ export default function NowScreen() {
   const { data: done = [], isLoading: loadingDone } = useGetNowTasksDoneToday();
   const { mutate: addTask } = useAddNowTask();
   const { mutate: markTask } = useMarkNowTask();
+  const { mutate: moveTask } = useMoveNowTaskToStack();
   const [text, setText] = useState("");
 
   // The completed ones go first and the others after them, in one list:
@@ -109,6 +111,17 @@ export default function NowScreen() {
     });
   };
 
+  // Dragging a card to the right is "sacar de hoy": the task goes back to the
+  // inbox and the place it leaves free is taken by the task that has been
+  // waiting the longest. The card only drags and tells: the move is done by
+  // the core, which is the one that knows what it means.
+  const moveToStack = (task: NowTask) => {
+    moveTask(task.id, {
+      onSuccess: () => toast.show("Devuelta al buzón"),
+      onError: () => toast.show("No se pudo guardar. Intente nuevamente.", "error"),
+    });
+  };
+
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
       <View style={[styles.header, { paddingTop: insets.top + TOP }]}>
@@ -143,8 +156,10 @@ export default function NowScreen() {
         <NowTaskList
           tasks={list}
           loading={loadingTasks || loadingDone}
+          tray={Tray}
           onPressTask={openBlock}
           onLongPressTask={mark}
+          onSwipeOutTask={moveToStack}
         />
 
         <TextField

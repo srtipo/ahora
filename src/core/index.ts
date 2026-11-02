@@ -8,5 +8,6 @@ export {
   getNowTasks,
   getNowTasksDoneToday,
   markNowTask,
+  moveNowTaskToStack,
 } from "./now";
 export { addStackTask, getStackTasks, markStackTask } from "./stack";
