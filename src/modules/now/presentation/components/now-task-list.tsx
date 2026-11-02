@@ -1,7 +1,9 @@
+import type { ComponentType } from "react";
 import { StyleSheet, View } from "react-native";
 import type { NowTask } from "@/core";
 import { Spinner } from "@/presentation/buttons";
 import { TaskCard, type TaskCardState } from "@/presentation/cards";
+import type { IconProps } from "@/presentation/icons";
 import { useTheme } from "@/theme";
 
 /** The gap between the title and the list. */
@@ -49,6 +51,13 @@ export type NowTaskListProps = {
   /** Whether the tasks are still being read. */
   loading?: boolean;
   /**
+   * The sign of the swipe.
+   *
+   * The card does not draw the tray by itself: it is injected, the same way
+   * the button receives its icon.
+   */
+  tray?: ComponentType<IconProps>;
+  /**
    * Action when a task is tapped.
    *
    * The list does not decide what happens: it tells, and the screen does the
@@ -62,6 +71,13 @@ export type NowTaskListProps = {
    * rest.
    */
   onLongPressTask?: (task: NowTask) => void;
+  /**
+   * Action when a task is swiped to the right.
+   *
+   * The list does not decide what happens: it tells, and the screen does the
+   * rest. Without this prop there is no swipe.
+   */
+  onSwipeOutTask?: (task: NowTask) => void;
 };
 
 /**
@@ -74,8 +90,10 @@ export type NowTaskListProps = {
 export function NowTaskList({
   tasks,
   loading = false,
+  tray,
   onPressTask,
   onLongPressTask,
+  onSwipeOutTask,
 }: NowTaskListProps) {
   const { palette } = useTheme();
 
@@ -96,6 +114,7 @@ export function NowTaskList({
           key={task.id}
           text={task.name}
           state={cardState(task)}
+          tray={tray}
           // A task that is already done does not open a block: it is over.
           onPress={
             task.status === "done" ? undefined : () => onPressTask?.(task)
@@ -103,6 +122,11 @@ export function NowTaskList({
           // A task that is already done is not marked either: it is over.
           onLongPress={
             task.status === "done" ? undefined : () => onLongPressTask?.(task)
+          }
+          // The swipe is "sacar de hoy": a task that is already done is over,
+          // so it does not go back to the inbox.
+          onSwipeOut={
+            task.status === "done" ? undefined : () => onSwipeOutTask?.(task)
           }
         />
       ))}
