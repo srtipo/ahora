@@ -195,7 +195,9 @@ que tenía y la migración corre otra vez desde el principio.
 Las reglas:
 
 - **La completada de hoy va primero.** La lista de ahora muestra las tareas
-  completadas hoy arriba y las demás después, sin nada que las separe.
+  completadas hoy arriba y las demás después, sin nada que las separe. De las
+  completadas de hoy sólo se muestran las tres más recientes: las demás quedan
+  guardadas, pero no se dibujan.
 - **La marcada va primero.** En la lista de ahora, la marcada va arriba
   aunque sea la más nueva, y las demás van de la más vieja a la más nueva.
 - **La marca es de la tarea.** La que sale de las tres al buzón conserva la

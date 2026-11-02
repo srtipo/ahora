@@ -105,23 +105,28 @@ export async function getNowTaskById(
 }
 
 /**
- * The tasks that were completed in a day, the most recent first.
+ * The tasks that were completed in a day, the most recent first, up to a
+ * number of them.
  *
  * The day is the one of the clock of the phone: from its first minute to
  * the first minute of the next one. A task that is done but was completed
- * another day is not in it.
+ * another day is not in it. The limit is the one the caller asks for: the
+ * order is by moment of completion, so the ones that stay out of it are the
+ * oldest of the day.
  */
 export async function listNowTasksDoneToday(
   db: Executor,
   since: number,
   until: number,
+  limit: number,
 ): Promise<NowTask[]> {
   const rows = await db.getAllAsync<NowTaskRow>(
     `SELECT id, name, status, marked, created_at, completed_at
      FROM now_tasks
      WHERE status = 'done' AND completed_at >= ? AND completed_at < ?
-     ORDER BY completed_at DESC`,
-    [since, until],
+     ORDER BY completed_at DESC
+     LIMIT ?`,
+    [since, until, limit],
   );
 
   return rows.map(toNowTask);
