@@ -3,7 +3,12 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAddStackTask, useGetStackTasks } from "@/modules/stack/hooks";
+import type { StackTask } from "@/core";
+import {
+  useAddStackTask,
+  useGetStackTasks,
+  useMarkStackTask,
+} from "@/modules/stack/hooks";
 import { StackTaskList } from "@/modules/stack/presentation/components";
 import { BackLink } from "@/presentation/buttons";
 import { TextField } from "@/presentation/fields";
@@ -89,6 +94,7 @@ export default function StackScreen() {
   const toast = useToast();
   const { data: tasks = [], isLoading: loading } = useGetStackTasks();
   const { mutate: addTask } = useAddStackTask();
+  const { mutate: markTask } = useMarkStackTask();
   const [text, setText] = useState("");
 
   // The field of the stack never marks: what is written here is born
@@ -106,10 +112,20 @@ export default function StackScreen() {
           toast.show("Anotada");
         },
         onError: () => {
-          toast.show("No se pudo guardar. Probá de nuevo.", "error");
+          toast.show("No se pudo guardar. Intente nuevamente.", "error");
         },
       },
     );
+  };
+
+  // The long press of a row is the mark: the task becomes the priority one,
+  // and pressing it again takes the mark away. The marked row says it with
+  // its color, so the toast is only there to say what happened.
+  const mark = (task: StackTask) => {
+    markTask(task.id, {
+      onSuccess: () => toast.show(task.marked ? "Tarea desmarcada" : "Tarea marcada"),
+      onError: () => toast.show("No se pudo guardar. Intente nuevamente.", "error"),
+    });
   };
 
   return (
@@ -152,7 +168,11 @@ export default function StackScreen() {
           ]}
           keyboardShouldPersistTaps="handled"
         >
-          <StackTaskList tasks={tasks} loading={loading} />
+          <StackTaskList
+            tasks={tasks}
+            loading={loading}
+            onLongPressTask={mark}
+          />
         </ScrollView>
 
         <LinearGradient

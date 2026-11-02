@@ -172,6 +172,25 @@ export async function completeNowTaskById(
 }
 
 /**
+ * Marks a task of now as the priority one.
+ *
+ * The mark is written and nothing else is decided here: who else is marked
+ * is not this function's business, because the mark belongs to the task.
+ */
+export async function markNowTaskById(db: Executor, id: string): Promise<void> {
+  await db.runAsync("UPDATE now_tasks SET marked = 1 WHERE id = ?", [id]);
+}
+
+/**
+ * Takes the mark away from a task of now.
+ *
+ * Only that task: the ones around keep the marks they have.
+ */
+export async function unmarkNowTaskById(db: Executor, id: string): Promise<void> {
+  await db.runAsync("UPDATE now_tasks SET marked = 0 WHERE id = ?", [id]);
+}
+
+/**
  * Removes a task from the table of the tasks of now.
  *
  * It is the way out of now: the task that leaves the three does not stay

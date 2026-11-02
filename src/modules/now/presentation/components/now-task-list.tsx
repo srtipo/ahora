@@ -55,6 +55,13 @@ export type NowTaskListProps = {
    * rest.
    */
   onPressTask?: (task: NowTask) => void;
+  /**
+   * Action when a task is held down.
+   *
+   * The list does not decide what happens: it tells, and the screen does the
+   * rest.
+   */
+  onLongPressTask?: (task: NowTask) => void;
 };
 
 /**
@@ -68,6 +75,7 @@ export function NowTaskList({
   tasks,
   loading = false,
   onPressTask,
+  onLongPressTask,
 }: NowTaskListProps) {
   const { palette } = useTheme();
 
@@ -91,6 +99,10 @@ export function NowTaskList({
           // A task that is already done does not open a block: it is over.
           onPress={
             task.status === "done" ? undefined : () => onPressTask?.(task)
+          }
+          // A task that is already done is not marked either: it is over.
+          onLongPress={
+            task.status === "done" ? undefined : () => onLongPressTask?.(task)
           }
         />
       ))}
