@@ -70,11 +70,13 @@ export async function addNowTask(task: NowTaskToAdd): Promise<void> {
       const out = open.slice(open.length - leaving);
 
       for (const going of out) {
-        // The task leaves now and goes to the stack: it keeps its name, its
-        // mark and the moment it was written. The mark belongs to the task,
-        // so moving it to another table does not change it: the one that
-        // waits in the stack can be the marked one.
+        // The task leaves now and goes to the stack: it keeps its id, its
+        // name, its mark and the moment it was written. The mark belongs to
+        // the task, so moving it to another table does not change it: the
+        // one that waits in the stack can be the marked one. The id is kept
+        // too, because it is the same task and not a copy of it.
         const moved: NewStackTask = {
+          id: going.id,
           name: going.name,
           marked: going.marked,
           createdAt: going.createdAt,
