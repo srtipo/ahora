@@ -128,6 +128,7 @@ Cuatro capas, y cada una en su carpeta. La decisión 47 del `decisiones.md` est�
           getNowTasks.handler.ts
           getNowTasksDoneToday.handler.ts
           markNowTask.handler.ts
+          moveNowTaskToStack.handler.ts
           repository.ts         -- el SQL de las tareas de ahora
         stack/                 -- el buzón: las tareas que todavía no entraron
           index.ts
@@ -217,6 +218,14 @@ Las reglas:
   conserva su id, su marca y su edad. Las dos escrituras van en la misma
   transacción, así que no hay un momento en que la tarea esté en las dos
   tablas ni en ninguna.
+- **Sacar de hoy.** Arrastrar la tarjeta a la derecha la saca de las tres: la
+  tarea se escribe en `stack_task` y se borra de `now_tasks`, y el lugar que
+  deja libre lo toma la del buzón que más tiempo lleva esperando (o la
+  marcada, si hay una). La que sale se muda: conserva su id, su marca y su
+  edad, y no es la que vuelve a subir, porque el reemplazo se elige antes de
+  escribir la que sale. Todo va en la misma transacción, así que no hay un
+  momento en que la tarea esté en las dos tablas ni en ninguna. Una tarea ya
+  completada no se saca: es el registro del día.
 - **Siempre hay tres abiertas.** Cuando entra una cuarta, deja la tabla la
   que menos importa: la que no está marcada y, entre las que no lo están, la
   más nueva. La tarea que sale va al buzón: se escribe en `stack_task` y se
