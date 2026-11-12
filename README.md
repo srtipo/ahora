@@ -246,6 +246,30 @@ Las reglas:
 - pnpm
 - Android: para la dev build hace falta el SDK de Android y JDK 17.
 
+## Cómo construir el APK
+
+La carpeta `android/` es generada y no se versiona (`/android` está en
+`.gitignore`): el proyecto nativo sale de `app.json`, así que si cambia el
+`app.json` hay que regenerarlo antes de compilar.
+
+```bash
+npx expo prebuild --platform android --no-install
+cd android
+./gradlew assembleRelease
+```
+
+El APK sale en `android/app/build/outputs/apk/release/app-release.apk`. Va
+firmado con el keystore de debug (`android/app/debug.keystore`) y trae las
+cuatro ABIs (armeabi-v7a, arm64-v8a, x86, x86_64), así que se puede instalar
+por sideload en cualquier teléfono:
+
+```bash
+adb install -r android/app/build/outputs/apk/release/app-release.apk
+```
+
+Para un APK más chico, con una sola ABI: `./gradlew assembleRelease
+-PreactNativeArchitectures=arm64-v8a`.
+
 ## Documentación
 
 - `decisiones.md` — la fuente de verdad del producto: cada decisión del diseño está anotada con el número y el motivo. Está en `.gitignore` y **no se versiona**: es un documento de trabajo, no parte del repo.
